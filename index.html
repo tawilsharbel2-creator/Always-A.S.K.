@@ -436,7 +436,7 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
     </div>
     <div class="top-right">
       <button class="btn ghost small" id="lbBtn" type="button">🏆 Leaderboard</button>
-      <div class="credit"><span class="dot"></span>Made by <strong>Kayan</strong> &amp; <strong>Sharbel</strong></div>
+      <div class="credit"><span class="dot"></span>Made by <strong>Always</strong> &amp; <strong>A.S.K.</strong></div>
     </div>
   </div>
 </header>
@@ -473,13 +473,13 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
 <footer class="foot">
   <div class="wrap">
     <span>ORBITAL Mission Control · a space mission design game</span>
-    <span>Made by <strong>Kayan</strong> and <strong>Sharbel</strong></span>
+    <span>Made by <strong>Always</strong> <strong>A.S.K.</strong></span>
   </div>
 </footer>
 
 <script>
 /* =========================================================
-   ORBITAL MISSION CONTROL — made by Kayan & Sharbel
+   ORBITAL MISSION CONTROL — made by Always A.S.K.
    Distances, sunlight and the rocket equation follow real physics.
    Costs (Mission Credits), speed-change budgets and risk odds are
    simplified game values chosen for learning, not real mission data.
@@ -1578,7 +1578,7 @@ function buildReport(r) {
   const m = r.m, line = "─".repeat(40);
   const crew = team.size > 1 ? ROLES.map(x => `${x.name}: ${ownerOf(x.id)}`) : ["Solo mission"];
   return [
-    "ORBITAL MISSION CONTROL — MISSION REPORT", "Made by Kayan & Sharbel", line,
+    "ORBITAL MISSION CONTROL — MISSION REPORT", "Made by Always A.S.K.", line,
     `Team:         ${teamLabel()} (${m.Df.name} level)`, ...crew.map(c => "  " + c), "",
     `Destination:  ${m.d.name} — ${m.A.name}`, `Goal:         ${m.O.name}`, `Result:       ${r.outcome}`,
     `Score:        ${r.total}/100   Science: ${r.science}/100`, "",

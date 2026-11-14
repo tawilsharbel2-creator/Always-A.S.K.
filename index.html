@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ORBITAL · Mission Control</title>
+<title>ORBITAL Mission Control</title>
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#13263d;--panel:#1a3352;--panel-2:#21406a;--card:#16304f;--line:#2f5079;--line-2:#4570a0;
-  --text:#f2f7fd;--muted:#b4c8dd;--dim:#86a3c2;
+  color-scheme:dark;--bg:#1f3d66;--panel:#274a78;--panel-2:#2f588c;--card:#213f69;--line:#44689a;--line-2:#5d86bd;
+  --text:#f5f9fe;--muted:#c6d6e8;--dim:#9db6d3;
   --cyan:#5fe0f5;--amber:#ffc864;--red:#ff7d8f;--green:#6ce8bc;--violet:#b9a2ff;
   --radius:18px;--display:"Space Grotesk",Inter,system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
 }
@@ -18,25 +19,15 @@
 html{scroll-behavior:smooth}
 body{
   margin:0;color:var(--text);font:17px/1.6 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;
-  background:radial-gradient(ellipse 130% 80% at 50% -10%,#3b6fa3 0%,#1e3b5e 45%,var(--bg) 100%) fixed;
+  background:radial-gradient(ellipse 130% 90% at 50% -10%,#6a9bd3 0%,#35609a 42%,var(--bg) 100%) fixed;
 }
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
-  background-image:
-    radial-gradient(1px 1px at 23px 41px,#fff,transparent),
-    radial-gradient(1px 1px at 140px 90px,#e2f0ff,transparent),
-    radial-gradient(1.5px 1.5px at 210px 180px,#fff,transparent),
-    radial-gradient(1px 1px at 80px 220px,#d6e8ff,transparent),
-    radial-gradient(1px 1px at 260px 30px,#fff,transparent),
-    radial-gradient(1px 1px at 180px 260px,#fff,transparent);
-  background-size:300px 300px;
-}
+#space{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
-.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 32px}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}
 
 /* Header */
-header.top{position:relative;z-index:2;border-bottom:1px solid var(--line);background:#13263dcc;backdrop-filter:blur(14px)}
+header.top{position:relative;z-index:2;border-bottom:1px solid var(--line);background:#1f3d66b0;backdrop-filter:blur(14px)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:84px}
 .brand{display:flex;align-items:center;gap:16px}
 .mark{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--cyan);display:grid;place-items:center;box-shadow:0 0 28px #5fe0f544;position:relative}
@@ -52,7 +43,7 @@ header.top{position:relative;z-index:2;border-bottom:1px solid var(--line);backg
 
 /* Stepper */
 .stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:36px 0 32px;padding:0;list-style:none}
-.stepper button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#1a3352b3;text-align:left;transition:.2s}
+.stepper button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#274a78b3;text-align:left;transition:.2s}
 .stepper button:hover:not(:disabled){border-color:var(--line-2);background:var(--panel-2)}
 .stepper button:disabled{opacity:.45;cursor:not-allowed}
 .stepper .n{flex-shrink:0;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;border:1px solid var(--line-2);font:600 14px var(--mono);color:var(--muted)}
@@ -67,7 +58,7 @@ header.top{position:relative;z-index:2;border-bottom:1px solid var(--line);backg
 .pagehead{margin-bottom:28px}
 .pagehead h2{font:700 clamp(30px,3.4vw,42px)/1.15 var(--display);margin:10px 0 12px;letter-spacing:-.01em}
 .pagehead p{margin:0;color:var(--muted);max-width:640px;font-size:18px}
-.panel{background:linear-gradient(160deg,#1c3757f2,#172f4cf7);border:1px solid var(--line);border-radius:var(--radius);padding:30px;margin-bottom:28px;box-shadow:0 20px 50px -30px #0008}
+.panel{background:linear-gradient(160deg,#294d7de8,#22436fee);border:1px solid var(--line);border-radius:var(--radius);padding:30px;margin-bottom:28px;box-shadow:0 20px 50px -30px #0008}
 .panel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:6px;flex-wrap:wrap}
 .panel-head h3{font:600 22px/1.3 var(--display);margin:0}
 .why{color:var(--muted);margin:0 0 22px;max-width:680px;font-size:16px}
@@ -119,7 +110,7 @@ header.top{position:relative;z-index:2;border-bottom:1px solid var(--line);backg
 .pill{padding:10px 18px;border-radius:999px;border:1px solid var(--line-2);background:var(--card);font-weight:600}
 .pill.sel{border-color:var(--cyan);background:#245078;color:#fff}
 .field{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted);font-weight:600}
-.field input{background:#122640;border:1px solid var(--line-2);border-radius:10px;padding:12px 14px;font-size:16px;color:var(--text);outline:none;width:100%}
+.field input{background:#183256;border:1px solid var(--line-2);border-radius:10px;padding:12px 14px;font-size:16px;color:var(--text);outline:none;width:100%}
 .field input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #5fe0f533}
 .names{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px}
 .roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
@@ -182,7 +173,7 @@ header.top{position:relative;z-index:2;border-bottom:1px solid var(--line);backg
 /* Review */
 .review-top{display:grid;grid-template-columns:180px 1fr;gap:32px;align-items:center}
 .gauge{width:180px;height:180px;border-radius:50%;display:grid;place-items:center;position:relative}
-.gauge::before{content:"";position:absolute;inset:14px;border-radius:50%;background:#172f4c}
+.gauge::before{content:"";position:absolute;inset:14px;border-radius:50%;background:#22436f}
 .gauge div{position:relative;text-align:center}
 .gauge strong{display:block;font:700 44px/1 var(--display)}
 .gauge small{font-size:13px;color:var(--muted)}
@@ -264,6 +255,16 @@ table.lb{width:100%;border-collapse:collapse;font-size:15px;min-width:620px}
 .lb .design{font-size:13px;color:var(--muted)}
 .lb-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
+/* One question at a time */
+.qdots{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.qdot{width:44px;height:44px;border-radius:50%;border:1px solid var(--line-2);background:var(--card);font:600 15px var(--mono);color:var(--muted)}
+.qdot.done{background:#1d5249;border-color:#3b9c80;color:var(--green)}
+.qdot.sel{border-color:var(--cyan);box-shadow:0 0 0 3px #5fe0f544;color:#fff}
+.sc-mini{max-width:380px;margin:0 auto}
+.lb-msg{font-size:14px;color:var(--amber);margin:0 0 14px}
+#lbBtn{white-space:nowrap}
+.top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
 /* Footer */
 footer.foot{position:relative;z-index:1;border-top:1px solid var(--line);padding:30px 0;color:var(--dim);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
@@ -272,7 +273,7 @@ footer strong{color:var(--text)}
 /* Responsive */
 @media (max-width:1060px){
   .layout{grid-template-columns:1fr}
-  .hud{position:sticky;top:0;z-index:3;order:-1;margin:0 -32px;padding:0 32px;background:#13263dee;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:3;order:-1;margin:0 -32px;padding:0 32px;background:#1f3d66ee;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
   .hud .panel{background:none;border:0;padding:12px 0;margin:0;box-shadow:none}
   .hud .verdict{margin-bottom:8px}
   .hud .levelline{display:none}
@@ -286,7 +287,7 @@ footer strong{color:var(--text)}
 }
 @media (max-width:720px){
   body{font-size:16px}
-  .wrap{padding:0 16px}
+  .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .hud{margin:0 -16px;padding:0 16px}
   .hud .metrics{gap:6px 10px}
   .hud .m-row{flex-direction:column;gap:0}
@@ -317,10 +318,113 @@ footer strong{color:var(--text)}
   .nav .btn{width:100%}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ===== Sticker theme: cream cards, black outlines, bright flat colour ===== */
+:root{
+  --ink:#1b1235;--paper:#fff7e6;--white:#ffffff;--sun:#ffd84d;--coral:#ff6b4a;--mint:#7be0b5;--lilac:#e9e0ff;
+  --bg:#24155c;--panel:#fff7e6;--panel-2:#fff;--card:#fff;--line:#1b1235;--line-2:#1b1235;
+  --text:#1b1235;--muted:#4f4670;--dim:#6f6790;
+  --cyan:#6b3df5;--amber:#b86a00;--red:#d92b55;--green:#0b8f60;--violet:#6b3df5;
+  --display:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;--mono:"Space Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+body{font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(180deg,#4a35b0 0%,#2f1f7a 45%,#24155c 100%) fixed}
+header.top{background:transparent;border-bottom:3px solid var(--ink);backdrop-filter:none}
+.brand h1{color:#fff;font-weight:800}.brand h1 span{color:var(--sun)}
+.brand .eyebrow,.pagehead .eyebrow{color:var(--sun)}
+.mark{border:3px solid var(--sun);box-shadow:none;background:var(--ink)}.mark::after{background:var(--sun);box-shadow:none}.mark::before{border-color:#ffd84d88}
+.credit{background:var(--white);border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--muted)}
+.credit .dot{background:var(--coral);box-shadow:none}
+.pagehead h2{color:#fff;font-weight:800}.pagehead p{color:#e6defd}.pagehead p b{color:var(--sun)}
+.panel,.hud .panel{background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink)}
+.panel-head h3,.subhead,.verdict h3{font-weight:800}
+.stepper button{background:var(--white);border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);border-radius:12px;color:var(--ink)}
+.stepper button:hover:not(:disabled){background:var(--lilac)}
+.stepper button.active{background:var(--sun);border-color:var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.stepper .n{border:2px solid var(--ink);color:var(--ink);background:var(--white)}
+.stepper button.active .n{border-color:var(--ink);color:var(--ink)}
+.stepper button.done .n{background:var(--mint);border-color:var(--ink);color:var(--ink)}
+.opt,.dest,.role,.rstat,.dash div,.phase,.log li,.an-group li,.check{background:var(--white);border:2.5px solid var(--ink);border-radius:12px}
+.opt:hover,.dest:hover{background:var(--lilac);border-color:var(--ink);transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink)}
+.opt.sel,.dest.sel{background:var(--sun);border-color:var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.opt.sel .opt-desc,.dest.sel p{color:var(--ink)}
+.radio{border:2.5px solid var(--ink);background:var(--white)}
+.opt.sel .radio{border-color:var(--ink);box-shadow:inset 0 0 0 4px var(--white),inset 0 0 0 11px var(--ink)}
+.opt.sel .radio.box{background:var(--ink);box-shadow:none}.opt.sel .radio.box::after{color:var(--sun)}
+.real{color:#5a2fd0}
+.tag{background:var(--lilac);border:1.5px solid var(--ink);color:var(--ink)}
+.facts{border-top:2px dashed #1b123555}
+.diff{background:var(--white);border-width:2px}
+.btn{background:var(--coral);border:2.5px solid var(--ink);color:var(--ink);box-shadow:4px 4px 0 var(--ink);font-weight:700}
+.btn:hover:not(:disabled){filter:none;transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn.ghost{background:var(--white);border-color:var(--ink);color:var(--ink)}.btn.ghost:hover:not(:disabled){background:var(--lilac)}
+.btn.go{background:var(--mint);border-color:var(--ink)}.btn.risky{background:var(--sun);border-color:var(--ink)}
+.btn:disabled{box-shadow:none}
+.pill,.tab,.qdot{background:var(--white);border:2.5px solid var(--ink);color:var(--ink)}
+.pill.sel,.tab.sel{background:var(--sun);border-color:var(--ink);color:var(--ink)}
+.qdot.done{background:var(--mint);border-color:var(--ink);color:var(--ink)}
+.qdot.sel{border-color:var(--ink);background:var(--sun);color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.owner{background:var(--violet);border:2px solid var(--ink);color:#fff}
+.handoff{background:var(--mint);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);color:var(--ink)}
+.field input{background:var(--white);border:2.5px solid var(--ink);color:var(--ink)}
+.field input:focus{border-color:var(--violet);box-shadow:3px 3px 0 var(--violet)}
+.note{background:var(--lilac);border:2px solid var(--ink);color:var(--ink)}
+.notice{background:var(--sun);border:2.5px solid var(--ink);color:var(--ink)}
+.chip{border:2px solid var(--ink);color:var(--ink)}
+.chip.good{background:var(--mint);color:var(--ink);border-color:var(--ink)}.chip.over{background:#ff9bb3;color:var(--ink);border-color:var(--ink)}.chip.warn{background:var(--sun);color:var(--ink);border-color:var(--ink)}
+.metric{border-top:2px dashed #1b123540}
+.bar{background:#e6ddc8;border:1.5px solid var(--ink);height:11px}
+.bar i.info{background:var(--violet)}
+.gauge::before{background:var(--paper)}.gauge{border:3px solid var(--ink)}
+.check.pass .ic{background:var(--mint);color:var(--ink)}.check.warn .ic{background:var(--sun);color:var(--ink)}.check.fail .ic{background:#ff9bb3;color:var(--ink)}
+.check .ic{border:2px solid var(--ink)}
+.check .fix{color:var(--ink)}.check h5 small{color:var(--violet)}
+.sc-svg{background:var(--ink);border:2.5px solid var(--ink)}
+.flight-svg{background:var(--ink);border:3px solid var(--ink)}
+.phase{color:var(--dim)}.phase.now{background:var(--sun);border-color:var(--ink);color:var(--ink)}
+.phase.ok{background:var(--mint);border-color:var(--ink);color:var(--ink)}.phase.hit{background:#ffe9a8;border-color:var(--ink);color:var(--ink)}.phase.lost{background:#ff9bb3;border-color:var(--ink);color:var(--ink)}
+.countdown{color:var(--coral)}
+.log li.good{border-left:8px solid var(--green)}.log li.caution{border-left:8px solid #f2b300}.log li.failure{border-left:8px solid var(--red)}.log li.info{border-left:8px solid var(--violet)}
+.decision{background:var(--sun);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink)}
+.decision p,.decision .who{color:var(--ink)}.decision .eyebrow{color:var(--ink)!important}
+.choice{background:var(--white);border:2.5px solid var(--ink)}.choice:hover{background:var(--lilac);border-color:var(--ink);transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink)}
+.choice span{color:var(--muted)}
+.stars{color:#f2b300;-webkit-text-stroke:1.5px var(--ink)}.stars .off{color:#e6ddc8}
+.bd-row{border-bottom:2px dashed #1b123540}
+pre.report{background:var(--white);border:2.5px solid var(--ink);color:var(--ink)}
+.lb th{border-bottom:2.5px solid var(--ink);color:var(--muted)}.lb td{border-bottom:1.5px dashed #1b123555}
+.lb tr.me td{background:var(--sun)}.lb .rank{color:var(--coral)}
+.lb-msg{color:var(--red)}
+.sc-list li{border-bottom:2px dashed #1b123540}
+footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#fff}
+@media (max-width:1060px){
+  .hud{background:var(--paper);border-bottom:3px solid var(--ink);backdrop-filter:none}
+  .hud .panel{background:none;border:0;box-shadow:none}
+}
+
+/* clearer pictures */
+.sc-mini{max-width:680px}
+.sc-svg{background:#2a1f6b;border-radius:14px}
+.sc-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.sc-chip{font-size:14px;padding:6px 12px;border-radius:999px;border:2px dashed #1b123566;color:var(--dim);background:var(--white)}
+.sc-chip b{margin-right:6px;color:inherit}
+.sc-chip.on{border:2px solid var(--ink);background:var(--mint);color:var(--ink)}
+.dest .orbwrap{height:150px}
+.orb{width:120px;height:120px;box-shadow:inset -12px -10px 18px #0005;border:3px solid var(--ink)}
+.orb.moon{background:radial-gradient(circle at 30% 30%,#8f98a6 0 9%,transparent 10%),radial-gradient(circle at 62% 58%,#8f98a6 0 13%,transparent 14%),radial-gradient(circle at 70% 26%,#99a2b0 0 6%,transparent 7%),radial-gradient(circle at 36% 72%,#99a2b0 0 7%,transparent 8%),radial-gradient(circle at 35% 30%,#f4f4ee,#c3cad3 70%)}
+.orb.mars{background:radial-gradient(ellipse at 50% 4%,#fff 0 12%,transparent 13%),radial-gradient(circle at 60% 55%,#a8452c 0 14%,transparent 15%),radial-gradient(circle at 30% 62%,#b3502f 0 9%,transparent 10%),radial-gradient(circle at 35% 30%,#ff9d6b,#d9603a 70%)}
+.orb.asteroid{width:112px;height:92px;background:radial-gradient(circle at 34% 36%,#6f7d8a 0 10%,transparent 11%),radial-gradient(circle at 66% 60%,#6f7d8a 0 13%,transparent 14%),radial-gradient(circle at 30% 30%,#d3dadd,#94a2ad 70%)}
+.orb.europa{background:radial-gradient(circle at 35% 30%,#fffdf5,#e6d6b4 70%)}
+.orb.europa::after{background:repeating-linear-gradient(115deg,transparent 0 13px,#b4553a 13px 16px),repeating-linear-gradient(40deg,transparent 0 22px,#b4553a88 22px 24px)}
+.dest-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.facts{grid-template-columns:1fr;gap:6px}
+.facts div{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.facts span{margin:0}
 </style>
 </head>
 <body>
 
+<canvas id="space" aria-hidden="true"></canvas>
 <header class="top">
   <div class="wrap">
     <div class="brand">
@@ -330,7 +434,10 @@ footer strong{color:var(--text)}
         <h1>ORBITAL <span>/</span> MISSION CONTROL</h1>
       </div>
     </div>
-    <div class="credit"><span class="dot"></span>Made by <strong>Kayan</strong> &amp; <strong>Sharbel</strong></div>
+    <div class="top-right">
+      <button class="btn ghost small" id="lbBtn" type="button">🏆 Leaderboard</button>
+      <div class="credit"><span class="dot"></span>Made by <strong>Kayan</strong> &amp; <strong>Sharbel</strong></div>
+    </div>
   </div>
 </header>
 
@@ -399,14 +506,14 @@ const ROLES = [
   { id: "systems",   icon: "⚡", name: "Systems Officer",  job: "Picks power, battery and antenna.",                 color: "#b9a2ff" }
 ];
 const roleById = id => ROLES.find(r => r.id === id);
-let team = { size: 1, name: "", names: ["", "", "", ""] };
+let team = { size: 0, name: "", names: ["", "", "", ""] };
 function playerName(i) { return (team.names[i] || "").trim() || "Player " + (i + 1); }
 function ownerOf(roleId) {
-  if (team.size === 1) return "You";
+  if (team.size <= 1) return "You";
   return playerName(ROLES.findIndex(r => r.id === roleId) % team.size);
 }
 function teamLabel() {
-  if (team.size === 1) return (team.names[0] || "").trim() || "Solo";
+  if (team.size <= 1) return (team.names[0] || "").trim() || "Solo";
   return team.name.trim() || Array.from({ length: team.size }, (_, i) => playerName(i)).join(" & ");
 }
 
@@ -566,20 +673,31 @@ const BUILD = {
 
 const STEPS = ["Team", "Mission", "Build", "Check", "Launch"];
 const DEFAULT = {
-  difficulty: "engineer", dest: "mars", objective: "comp", approach: "orbit",
-  launcher: "medium", prop: "chemical", test: "none",
-  instr: ["camera"], lifetime: "standard",
-  power: "solar", battery: "small", comms: "lowGain"
+  difficulty: null, dest: null, objective: null, approach: null,
+  launcher: null, prop: null, test: null, instr: [], lifetime: null,
+  power: null, battery: null, comms: null
 };
 let state = JSON.parse(JSON.stringify(DEFAULT));
 let step = 1, tab = "engineer", flying = false, lastEntryId = null, lbFilter = "this";
 const currentDest = () => DEST[state.dest];
 
+/* ---------- What still has to be chosen ---------- */
+const NEED = [["size", "Who's playing"], ["difficulty", "Level"], ["dest", "Destination"], ["objective", "Goal"], ["approach", "How to explore"],
+  ["launcher", "Rocket"], ["prop", "Engine"], ["test", "Testing"], ["instr", "Science tools"], ["lifetime", "Mission length"],
+  ["power", "Power"], ["battery", "Battery"], ["comms", "Antenna"]];
+const needed = () => NEED.filter(([k]) => !(k === "lifetime" && state.approach === "flyby"));
+const isChosen = k => k === "size" ? team.size > 0 : k === "instr" ? state.instr.length > 0 : !!state[k];
+const missing = () => needed().filter(([k]) => !isChosen(k));
+function needPanel(title) {
+  return `<div class="pagehead"><div class="eyebrow">Almost there</div><h2>${title}</h2><p>Finish these choices first. Tap one to go there.</p></div>
+    <section class="panel"><div class="btn-row">${missing().map(([k, l]) => `<button class="btn ghost" type="button" data-goto="${k}">${l}</button>`).join("")}</div></section>`;
+}
+
 /* ---------- The mission model ---------- */
 function compute(s) {
   const d = DEST[s.dest], O = OBJ[s.objective], A = APPROACH[s.approach], Df = DIFF[s.difficulty],
         L = LAUNCH[s.launcher], P = PROP[s.prop], W = POWER[s.power], B = BATTERY[s.battery],
-        C = COMMS[s.comms], T = TEST[s.test], LF = LIFE[s.lifetime];
+        C = COMMS[s.comms], T = TEST[s.test], LF = LIFE[s.lifetime] || LIFE.standard;
   const tools = s.instr.map(k => ({ key: k, ...INSTR[k] }));
   const landing = s.approach === "land";
   const gear = landing ? d.gear : null;
@@ -697,6 +815,16 @@ function metricHTML(emo, label, val, sub, frac, cls) {
 }
 
 function renderHUD() {
+  const ms = missing();
+  if (ms.length) {
+    const total = needed().length, done = total - ms.length;
+    $("levelLine").textContent = "Make your choices to see how the mission looks.";
+    $("metrics").innerHTML = `<div class="metric"><div class="m-row"><span class="m-label">✅ <span class="lt">Choices made</span></span><span class="m-val">${done} / ${total}</span></div>
+      <div class="bar"><i class="info" style="width:${Math.max(3, done / total * 100)}%"></i></div>
+      <div class="m-sub" style="margin-top:12px">Still to choose: ${ms.map(x => x[1]).join(", ")}</div></div>`;
+    $("verdictChip").textContent = "SETTING UP"; $("verdictChip").className = "chip warn";
+    return;
+  }
   const m = compute(state);
   const level = (bad, warn) => bad ? "bad" : warn ? "warn" : "ok";
   const sb = m.Df.sandbox;
@@ -722,7 +850,7 @@ function renderHUD() {
 /* ---------- Stepper ---------- */
 function renderStepper() {
   $("stepper").innerHTML = STEPS.map((lbl, i) => {
-    const n = i + 1, cls = n === step ? "active" : n < step ? "done" : "";
+    const n = i + 1, cls = n === step ? "active" : (step <= 5 && n < step) ? "done" : "";
     return `<li><button type="button" class="${cls}" data-step="${n}" ${flying && n !== step ? "disabled" : ""} ${n === step ? 'aria-current="step"' : ""}>
       <span class="n">${n < step ? "✓" : n}</span><span class="lbl">${lbl}</span></button></li>`;
   }).join("");
@@ -742,7 +870,7 @@ function ownerBadge(roleId) {
   return `<span class="owner">${r.icon} ${r.name}${team.size > 1 ? " · " + esc(ownerOf(roleId)) : ""}</span>`;
 }
 function handoff(roleId) {
-  if (team.size === 1) return "";
+  if (team.size <= 1) return "";
   const r = roleById(roleId);
   return `<div class="handoff"><span class="big">${r.icon}</span><div>Pass the device to <b data-owner="${roleId}">${esc(ownerOf(roleId))}</b>, our ${r.name}.</div></div>`;
 }
@@ -757,113 +885,121 @@ function optCard(group, key, o, selected, tags, multi) {
 
 /* ---------- Step 1: Team ---------- */
 function renderTeam() {
-  const sizes = [1, 2, 3, 4].map(n => `<button type="button" class="pill ${team.size === n ? "sel" : ""}" data-size="${n}">${n === 1 ? "Solo" : n + " players"}</button>`).join("");
-  const nameFields = team.size === 1
-    ? `<label class="field">Your name (optional)<input data-name="0" maxlength="20" value="${esc(team.names[0])}" placeholder="Your name"></label>`
-    : `<label class="field">Team name<input data-teamname maxlength="24" value="${esc(team.name)}" placeholder="e.g. Rocket Owls"></label>` +
-      Array.from({ length: team.size }, (_, i) => `<label class="field">Player ${i + 1}<input data-name="${i}" maxlength="20" value="${esc(team.names[i])}" placeholder="Player ${i + 1}"></label>`).join("");
-  const roles = ROLES.map(r => `<div class="role" style="border-top:3px solid ${r.color}">
+  const sizes = [1, 2, 3, 4].map(n => `<button type="button" class="pill ${team.size === n ? "sel" : ""}" data-size="${n}">${n === 1 ? "Just me" : n + " players"}</button>`).join("");
+  const nameFields = team.size === 0 ? "" : team.size === 1
+    ? `<label class="field">Your name<input id="name0" data-name="0" maxlength="20" value="${esc(team.names[0])}" placeholder="Your name"></label>`
+    : `<label class="field">Team name<input id="teamname" data-teamname maxlength="24" value="${esc(team.name)}" placeholder="e.g. Rocket Owls"></label>` +
+      Array.from({ length: team.size }, (_, i) => `<label class="field">Player ${i + 1}<input id="name${i}" data-name="${i}" maxlength="20" value="${esc(team.names[i])}" placeholder="Player ${i + 1}"></label>`).join("");
+  const roles = team.size > 1 ? `<h4 class="subhead">Team jobs</h4><p class="why">${team.size < 4 ? "Some players do two jobs." : "Everyone gets one job."}</p>
+      <div class="roles">${ROLES.map(r => `<div class="role" style="border-top:3px solid ${r.color}">
       <div class="ico">${r.icon}</div><h5>${r.name}</h5><p>${r.job}</p>
-      <span class="owner" data-owner="${r.id}">${esc(ownerOf(r.id))}</span></div>`).join("");
-  const diffs = Object.entries(DIFF).map(([k, o]) => optCard("difficulty", k, o, state.difficulty === k,
-    k === "sandbox" ? ["Not on leaderboard"] : [o.budget === 1 ? "Normal money" : (o.budget > 1 ? "+" : "−") + Math.round(Math.abs(o.budget - 1) * 100) + "% money"])).join("");
-
+      <span class="owner" data-owner="${r.id}">${esc(ownerOf(r.id))}</span></div>`).join("")}</div>` : "";
+  const diffs = Object.entries(DIFF).map(([k, o]) => optCard("difficulty", k, o, state.difficulty === k)).join("");
   return `
     <div class="pagehead">
       <div class="eyebrow">Step 1</div>
-      <h2>Build your mission team.</h2>
-      <p>Play alone, or as a team of up to 4. Each player gets a job and makes the calls for that part of the mission.</p>
+      <h2>Who's playing?</h2>
+      <p>Play alone or as a team of up to 4.</p>
     </div>
-
     <section class="panel">
-      <div class="panel-head"><h3>Who's playing?</h3></div>
       <div class="size-row">${sizes}</div>
-      <div class="names">${nameFields}</div>
-      <h4 class="subhead">${team.size === 1 ? "You do every job" : "Team jobs"}</h4>
-      <p class="why">${team.size === 1 ? "You're in charge of everything. Good luck, Flight Director!" : team.size < 4 ? "Some players do two jobs." : "Everyone gets one job."}</p>
-      <div class="roles">${roles}</div>
+      ${nameFields ? `<div class="names">${nameFields}</div>` : ""}
+      ${roles}
     </section>
-
     <section class="panel">
       <div class="panel-head"><h3>Pick a level</h3></div>
-      <p class="why">Change it any time to make the game easier or harder.</p>
+      <p class="why">You can change it later.</p>
       <div class="opt-grid">${diffs}</div>
     </section>
-
-    ${leaderboardPanel()}
-
-    <div class="nav"><span></span><button class="btn" type="button" data-nav="2">Next: plan the mission →</button></div>`;
+    <div class="nav"><span></span><button class="btn" type="button" data-nav="2" ${team.size && state.difficulty ? "" : "disabled"}>Next: plan the mission →</button></div>`;
 }
 
-/* ---------- Step 2: Mission ---------- */
-function renderMission() {
-  const m = compute(state);
-  const destCards = Object.entries(DEST).map(([k, d]) => `
-    <button type="button" class="dest ${state.dest === k ? "sel" : ""}" data-group="dest" data-key="${k}" aria-pressed="${state.dest === k}">
-      <span class="diff ${d.diff}">${d.diff.toUpperCase()}</span>
-      <span class="orbwrap"><span class="orb ${d.orb}"></span></span>
-      <h4>${d.name}</h4>
-      <p>${d.blurb}</p>
-      <span class="facts">
-        <div><span>${d.distWhat}</span>${d.distLabel}</div>
-        <div><span>Sunlight</span>${Math.round(100 / d.sunAU ** 2)}%</div>
-        <div><span>Money</span>${money(m.Df.sandbox ? Infinity : Math.round(d.budget * m.Df.budget))}</div>
-      </span>
-    </button>`).join("");
-  const goals = Object.entries(OBJ).map(([k, o]) => optCard("objective", k, o, state.objective === k)).join("");
-  const appr = Object.entries(APPROACH).map(([k, o]) => {
-    let real = o.real;
-    if (k === "land" && state.dest === "mars") real = "Mars' air slows you down, so landing takes less fuel than going into orbit!";
-    return optCard("approach", k, { ...o, real }, state.approach === k, [o.fuel]);
-  }).join("");
+/* ---------- Steps 2 and 3: one question at a time ---------- */
+const QS = [
+  { step: 2, id: "dest", role: "director", title: "Where do you want to go?", why: "Harder places give more money and more to discover.", kind: "dest" },
+  { step: 2, id: "objective", role: "director", title: "What is your goal?", why: "Your goal decides which tools you'll need.", data: OBJ },
+  { step: 2, id: "approach", role: "director", title: "How will you explore?", why: "Staying in orbit or landing takes extra fuel, which makes the spacecraft heavier.", data: APPROACH, tags: o => [o.fuel] },
+  ...["engineer", "scientist", "systems"].flatMap(role => BUILD[role].map(g => ({ step: 3, role, ...g })))
+];
+const QTITLE = { launcher: "Pick a rocket.", prop: "Pick an engine.", test: "How much testing?", instr: "Pick your science tools.", lifetime: "How long will the mission last?",
+  power: "Pick a power source.", battery: "Pick a battery.", comms: "Pick an antenna." };
+let qi = { 2: 0, 3: 0 };
+const answered = q => q.multi ? state[q.id].length > 0 : !!state[q.id];
+const qList = n => QS.filter(q => q.step === n && !(q.hideIf && q.hideIf(state)));
+function firstOpen(n) { const i = qList(n).findIndex(q => !answered(q)); return i < 0 ? 0 : i; }
 
+function renderWizard(n) {
+  if (n === 3 && qList(2).some(q => !answered(q))) return needPanel("Plan the mission first.");
+  const list = qList(n);
+  qi[n] = clamp(qi[n], 0, list.length - 1);
+  const i = qi[n], q = list[i];
+  const Df = DIFF[state.difficulty] || DIFF.engineer;
+  const dots = list.map((x, j) => `<button type="button" class="qdot ${j === i ? "sel" : ""} ${answered(x) ? "done" : ""}" data-q="${j}" aria-label="Question ${j + 1}">${answered(x) ? "✓" : j + 1}</button>`).join("");
+  let cards;
+  if (q.kind === "dest") {
+    cards = `<div class="dest-grid">${Object.entries(DEST).map(([k, d]) => `
+      <button type="button" class="dest ${state.dest === k ? "sel" : ""}" data-group="dest" data-key="${k}" aria-pressed="${state.dest === k}">
+        <span class="diff ${d.diff}">${d.diff.toUpperCase()}</span>
+        <span class="orbwrap"><span class="orb ${d.orb}"></span></span>
+        <h4>${d.name}</h4>
+        <p>${d.blurb}</p>
+        <span class="facts">
+          <div><span>${d.distWhat}</span>${d.distLabel}</div>
+          <div><span>Sunlight</span>${Math.round(100 / d.sunAU ** 2)}%</div>
+          <div><span>Money</span>${money(Df.sandbox ? Infinity : Math.round(d.budget * Df.budget))}</div>
+        </span>
+      </button>`).join("")}</div>`;
+  } else {
+    cards = `<div class="opt-grid">${Object.entries(q.data).map(([k, o]) => {
+      const sel = q.multi ? state[q.id].includes(k) : state[q.id] === k;
+      let real = o.real;
+      if (q.id === "approach" && k === "land" && state.dest === "mars") real = "Mars' air slows you down, so landing takes less fuel than going into orbit!";
+      return optCard(q.id, k, { ...o, real }, sel, q.tags ? q.tags(o, k) : [], q.multi);
+    }).join("")}</div>`;
+  }
+  const last = i === list.length - 1, ok = answered(q);
+  const nextLabel = !last ? "Next →" : n === 2 ? "Next: build the spacecraft →" : "Next: check the design →";
   return `
     <div class="pagehead">
-      <div class="eyebrow">Step 2</div>
-      <h2>Plan the mission.</h2>
-      <p>Where are you going, what do you want to find out, and how will you explore?</p>
+      <div class="eyebrow">Step ${n} · Question ${i + 1} of ${list.length}</div>
+      <h2>${QTITLE[q.id] || q.title}</h2>
+      <p>${q.multi ? "Pick one or more. " : ""}${q.why}</p>
     </div>
-    ${handoff("director")}
-    <section class="panel">
-      <div class="panel-head"><h3>Destination</h3>${ownerBadge("director")}</div>
-      <p class="why">Harder places give more money and more to discover.</p>
-      <div class="dest-grid">${destCards}</div>
-    </section>
-    <section class="panel">
-      <div class="panel-head"><h3>Goal</h3>${ownerBadge("director")}</div>
-      <p class="why">Your goal decides which tools and approach you'll need.</p>
-      <div class="opt-grid">${goals}</div>
-    </section>
-    <section class="panel">
-      <div class="panel-head"><h3>How to explore</h3>${ownerBadge("director")}</div>
-      <p class="why">Staying in orbit or landing takes extra fuel, which makes the spacecraft heavier.</p>
-      <div class="opt-grid">${appr}</div>
-    </section>
+    <div class="qdots">${dots}</div>
+    ${handoff(q.role)}
+    ${n === 3 ? `<section class="panel"><div class="sc-mini">${spacecraftSVG()}</div>${partChips()}</section>` : ""}
+    <section class="panel">${cards}</section>
     <div class="nav">
-      <button class="btn ghost" type="button" data-nav="1">← Team</button>
-      <button class="btn" type="button" data-nav="3">Next: build the spacecraft →</button>
+      ${i > 0 ? `<button class="btn ghost" type="button" data-q="${i - 1}">← Back</button>` : `<button class="btn ghost" type="button" data-nav="${n - 1}">← Back</button>`}
+      ${last ? `<button class="btn" type="button" data-nav="${n + 1}" ${ok ? "" : "disabled"}>${nextLabel}</button>` : `<button class="btn" type="button" data-q="${i + 1}" ${ok ? "" : "disabled"}>${nextLabel}</button>`}
     </div>`;
 }
 
 /* ---------- Spacecraft picture ---------- */
-function spacecraftSVG(m) {
-  const s = m.s, cx = 180, by = 70, bw = 64, bh = 60, bx = cx - bw / 2, out = [];
+function partChips() {
+  const items = [["Rocket", LAUNCH[state.launcher]], ["Engine", PROP[state.prop]], ["Testing", TEST[state.test]],
+    ["Tools", state.instr.length ? { name: state.instr.map(k => INSTR[k].name).join(" + ") } : null],
+    ["Power", POWER[state.power]], ["Battery", BATTERY[state.battery]], ["Antenna", COMMS[state.comms]]];
+  return `<div class="sc-chips">${items.map(([l, o]) => `<span class="sc-chip ${o ? "on" : ""}"><b>${l}</b>${o ? esc(o.name) : "not chosen yet"}</span>`).join("")}</div>`;
+}
+function spacecraftSVG() {
+  const s = state, m = { landing: state.approach === "land" }, cx = 180, by = 70, bw = 64, bh = 60, bx = cx - bw / 2, out = [];
   // power
   if (s.power === "solar" || s.power === "wings") {
     const w = s.power === "wings" ? 118 : 62, h = s.power === "wings" ? 40 : 34, y = by + bh / 2 - h / 2;
     for (const side of [-1, 1]) {
       const x = side < 0 ? bx - 10 - w : bx + bw + 10;
-      out.push(`<line x1="${side < 0 ? bx : bx + bw}" y1="${by + bh / 2}" x2="${side < 0 ? x + w : x}" y2="${by + bh / 2}" stroke="#9fb6cf" stroke-width="3"/>`);
-      out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#1f4f8f" stroke="#7fb2ee" stroke-width="1.5"/>`);
-      for (let i = 1; i < (s.power === "wings" ? 6 : 3); i++) out.push(`<line x1="${x + i * w / (s.power === "wings" ? 6 : 3)}" y1="${y}" x2="${x + i * w / (s.power === "wings" ? 6 : 3)}" y2="${y + h}" stroke="#7fb2ee" stroke-width=".8" opacity=".7"/>`);
-      out.push(`<line x1="${x}" y1="${y + h / 2}" x2="${x + w}" y2="${y + h / 2}" stroke="#7fb2ee" stroke-width=".8" opacity=".7"/>`);
+      out.push(`<line x1="${side < 0 ? bx : bx + bw}" y1="${by + bh / 2}" x2="${side < 0 ? x + w : x}" y2="${by + bh / 2}" stroke="#ffffff" stroke-width="4"/>`);
+      out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#2f7be0" stroke="#ffffff" stroke-width="2.5"/>`);
+      for (let i = 1; i < (s.power === "wings" ? 6 : 3); i++) out.push(`<line x1="${x + i * w / (s.power === "wings" ? 6 : 3)}" y1="${y}" x2="${x + i * w / (s.power === "wings" ? 6 : 3)}" y2="${y + h}" stroke="#cfe4ff" stroke-width="1.4" opacity=".7"/>`);
+      out.push(`<line x1="${x}" y1="${y + h / 2}" x2="${x + w}" y2="${y + h / 2}" stroke="#cfe4ff" stroke-width="1.4" opacity=".7"/>`);
     }
-  } else {
+  } else if (s.power === "rtg") {
     for (const [dx, dy] of [[-1, 1], [1, 1]]) {
       const x1 = dx < 0 ? bx : bx + bw, y1 = by + bh - 8, x2 = x1 + dx * 46, y2 = y1 + dy * 30;
-      out.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#9fb6cf" stroke-width="3"/>`);
-      out.push(`<g transform="translate(${x2},${y2}) rotate(${dx * -30})"><rect x="-9" y="-18" width="18" height="36" rx="5" fill="#59616e" stroke="#c6ccd4"/>
-        ${[-12, -4, 4, 12].map(fy => `<line x1="-15" y1="${fy}" x2="15" y2="${fy}" stroke="#c6ccd4" stroke-width="1.5"/>`).join("")}
+      out.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="4"/>`);
+      out.push(`<g transform="translate(${x2},${y2}) rotate(${dx * -30})"><rect x="-9" y="-18" width="18" height="36" rx="5" fill="#8a94a3" stroke="#ffffff"/>
+        ${[-12, -4, 4, 12].map(fy => `<line x1="-15" y1="${fy}" x2="15" y2="${fy}" stroke="#ffffff" stroke-width="2.5"/>`).join("")}
         <circle r="4" fill="#ff9e5e"/></g>`);
     }
   }
@@ -871,8 +1007,8 @@ function spacecraftSVG(m) {
   if (m.landing) {
     for (const side of [-1, 1]) {
       const x1 = side < 0 ? bx + 6 : bx + bw - 6, x2 = x1 + side * 30;
-      out.push(`<line x1="${x1}" y1="${by + bh}" x2="${x2}" y2="${by + bh + 44}" stroke="#d0d8e2" stroke-width="3"/>`);
-      out.push(`<line x1="${x2 - 9}" y1="${by + bh + 45}" x2="${x2 + 9}" y2="${by + bh + 45}" stroke="#d0d8e2" stroke-width="4" stroke-linecap="round"/>`);
+      out.push(`<line x1="${x1}" y1="${by + bh}" x2="${x2}" y2="${by + bh + 44}" stroke="#ffffff" stroke-width="4"/>`);
+      out.push(`<line x1="${x2 - 9}" y1="${by + bh + 45}" x2="${x2 + 9}" y2="${by + bh + 45}" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>`);
     }
   }
   // engine
@@ -880,80 +1016,37 @@ function spacecraftSVG(m) {
   if (s.prop === "ion") {
     out.push(`<ellipse cx="${cx}" cy="${ey + 10}" rx="17" ry="8" fill="#26385a" stroke="#9fd8ff"/>`);
     out.push(`<ellipse cx="${cx}" cy="${ey + 22}" rx="12" ry="14" fill="#6fd0ff" opacity=".45"><animate attributeName="opacity" values=".25;.6;.25" dur="1.6s" repeatCount="indefinite"/></ellipse>`);
-  } else {
+  } else if (s.prop) {
     const w2 = s.prop === "cryo" ? 30 : 24, h2 = s.prop === "cryo" ? 30 : 24;
-    out.push(`<path d="M${cx - 9} ${ey} L${cx + 9} ${ey} L${cx + w2 / 2} ${ey + h2} L${cx - w2 / 2} ${ey + h2} Z" fill="#7b8794" stroke="#c6ccd4"/>`);
-    if (s.prop === "cryo") out.push(`<path d="M${cx - 5} ${ey + 2} h10" stroke="#bfefff" stroke-width="3"/>`);
+    out.push(`<path d="M${cx - 9} ${ey} L${cx + 9} ${ey} L${cx + w2 / 2} ${ey + h2} L${cx - w2 / 2} ${ey + h2} Z" fill="#aab6c4" stroke="#ffffff"/>`);
+    if (s.prop === "cryo") out.push(`<path d="M${cx - 5} ${ey + 2} h10" stroke="#bfefff" stroke-width="4"/>`);
   }
   // body
-  out.push(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="7" fill="url(#foil)" stroke="#f6d77a" stroke-width="1.5"/>`);
+  out.push(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="7" fill="url(#foil)" stroke="#f6d77a" stroke-width="2.5"/>`);
   if (s.battery === "large") out.push(`<rect x="${bx + 10}" y="${by + 36}" width="20" height="12" rx="2" fill="#1d4a44" stroke="#6ce8bc"/><rect x="${bx + 30}" y="${by + 39}" width="3" height="6" fill="#6ce8bc"/><rect x="${bx + 12}" y="${by + 38}" width="14" height="8" fill="#6ce8bc"/>`);
   if (s.test === "extensive") out.push(`<text x="${bx + bw - 8}" y="${by + 16}" font-size="12" text-anchor="end" fill="#13263d" font-weight="700">2×</text>`);
   // antenna
   const ay = by;
-  if (s.comms === "lowGain") out.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 30}" stroke="#d0d8e2" stroke-width="2.5"/><circle cx="${cx}" cy="${ay - 32}" r="4" fill="#d0d8e2"/>`);
-  else {
+  if (s.comms === "lowGain") out.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 30}" stroke="#ffffff" stroke-width="4"/><circle cx="${cx}" cy="${ay - 32}" r="4" fill="#ffffff"/>`);
+  else if (s.comms) {
     const r = s.comms === "bigDish" ? 40 : 24;
-    out.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 10}" stroke="#d0d8e2" stroke-width="3"/>`);
-    out.push(`<path d="M${cx - r} ${ay - 10 - r * 0.55} Q${cx} ${ay - 2} ${cx + r} ${ay - 10 - r * 0.55} Z" fill="#e8edf3" stroke="#a9b6c6"/>`);
-    out.push(`<line x1="${cx}" y1="${ay - 10}" x2="${cx}" y2="${ay - 18 - r * 0.6}" stroke="#a9b6c6" stroke-width="1.5"/>`);
+    out.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 10}" stroke="#ffffff" stroke-width="4"/>`);
+    out.push(`<path d="M${cx - r} ${ay - 10 - r * 0.55} Q${cx} ${ay - 2} ${cx + r} ${ay - 10 - r * 0.55} Z" fill="#e8edf3" stroke="#ffffff"/>`);
+    out.push(`<line x1="${cx}" y1="${ay - 10}" x2="${cx}" y2="${ay - 18 - r * 0.6}" stroke="#ffffff" stroke-width="2.5"/>`);
   }
   // instruments
-  if (s.instr.includes("camera")) out.push(`<rect x="${bx + bw - 4}" y="${by + 6}" width="16" height="14" rx="3" fill="#2b2f3a" stroke="#c6ccd4"/><circle cx="${bx + bw + 14}" cy="${by + 13}" r="5" fill="#5fe0f5" stroke="#c6ccd4"/>`);
+  if (s.instr.includes("camera")) out.push(`<rect x="${bx + bw - 4}" y="${by + 6}" width="16" height="14" rx="3" fill="#2b2f3a" stroke="#ffffff"/><circle cx="${bx + bw + 14}" cy="${by + 13}" r="5" fill="#5fe0f5" stroke="#ffffff"/>`);
   if (s.instr.includes("spectro")) out.push(`<rect x="${bx - 16}" y="${by + 4}" width="18" height="18" rx="3" fill="#3b2f5e" stroke="#b9a2ff"/><circle cx="${bx - 7}" cy="${by + 13}" r="4" fill="#b9a2ff"/>`);
-  if (s.instr.includes("scoop")) out.push(`<path d="M${bx + bw} ${by + bh - 10} l22 14 l10 18" fill="none" stroke="#d0d8e2" stroke-width="3" stroke-linejoin="round"/><path d="M${bx + bw + 26} ${by + bh + 22} q6 10 14 2" fill="#ffc864" stroke="#d0d8e2"/>`);
+  if (s.instr.includes("scoop")) out.push(`<path d="M${bx + bw} ${by + bh - 10} l22 14 l10 18" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/><path d="M${bx + bw + 26} ${by + bh + 22} q6 10 14 2" fill="#ffc864" stroke="#ffffff"/>`);
 
-  return `<svg class="sc-svg" viewBox="0 0 360 200" role="img" aria-label="Picture of your spacecraft">
+  return `<svg class="sc-svg" viewBox="10 14 340 172" role="img" aria-label="Picture of your spacecraft">
     <defs><linearGradient id="foil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#e0a93a"/><stop offset="1" stop-color="#b9822a"/></linearGradient></defs>
     ${out.join("")}</svg>`;
 }
 
-/* ---------- Step 3: Build ---------- */
-function renderBuild() {
-  const m = compute(state);
-  const tabs = ["engineer", "scientist", "systems"].map(id => {
-    const r = roleById(id);
-    return `<button type="button" class="tab ${tab === id ? "sel" : ""}" data-tab="${id}"><span class="dotc" style="background:${r.color}"></span>${r.icon} ${r.name}${team.size > 1 ? ` <small>${esc(ownerOf(id))}</small>` : ""}</button>`;
-  }).join("");
-
-  const groups = BUILD[tab].map(g => {
-    if (g.hideIf && g.hideIf(state)) return `<h4 class="subhead">${g.title}</h4><p class="note">${g.hiddenNote}</p>`;
-    const cards = Object.entries(g.data).map(([k, o]) => {
-      const sel = g.multi ? state[g.id].includes(k) : state[g.id] === k;
-      return optCard(g.id, k, o, sel, g.tags(o, k), g.multi);
-    }).join("");
-    return `<h4 class="subhead">${g.title}</h4><p class="why">${g.why}</p><div class="opt-grid">${cards}</div>`;
-  }).join("");
-
-  const parts = [
-    ["Rocket", m.L.name], ["Engine", m.P.name], ["Power", m.W.name],
-    ["Antenna", m.C.name], ["Tools", m.tools.map(t => t.name).join(", ")], ["Fuel", kg(m.propellant)]
-  ].map(([a, b]) => `<li><span>${a}</span><span>${esc(b)}</span></li>`).join("");
-
-  const order = ["engineer", "scientist", "systems"], idx = order.indexOf(tab);
-  return `
-    <div class="pagehead">
-      <div class="eyebrow">Step 3 · ${esc(m.d.name)} · ${esc(m.A.name)}</div>
-      <h2>Build the spacecraft.</h2>
-      <p>Each job has its own tab. Watch <b>Your Mission</b> — every choice changes something else.</p>
-    </div>
-    <section class="panel">
-      <div class="sc-panel">${spacecraftSVG(m)}<ul class="sc-list">${parts}</ul></div>
-    </section>
-    <div class="tabs" role="tablist">${tabs}</div>
-    ${handoff(tab)}
-    <section class="panel">
-      <div class="panel-head"><h3>${roleById(tab).icon} ${roleById(tab).name}'s choices</h3>${ownerBadge(tab)}</div>
-      ${groups}
-    </section>
-    <div class="nav">
-      ${idx > 0 ? `<button class="btn ghost" type="button" data-tabnav="${order[idx - 1]}">← ${roleById(order[idx - 1]).name}</button>` : `<button class="btn ghost" type="button" data-nav="2">← Mission</button>`}
-      ${idx < 2 ? `<button class="btn" type="button" data-tabnav="${order[idx + 1]}">Next: ${roleById(order[idx + 1]).name} →</button>` : `<button class="btn" type="button" data-nav="4">Next: check the design →</button>`}
-    </div>`;
-}
-
 /* ---------- Step 4: Check ---------- */
 function renderCheck() {
+  if (missing().length) return needPanel("A few choices are still missing.");
   const m = compute(state);
   const color = m.overLimit ? "var(--red)" : m.warnings ? "var(--amber)" : "var(--green)";
   const title = m.overLimit ? "Some things are over the limit" : m.warnings ? "Ready, but a bit risky" : "Ready for launch!";
@@ -982,7 +1075,7 @@ function renderCheck() {
     </div>
     <section class="panel">
       <div class="review-top">
-        <div class="gauge" style="background:conic-gradient(${color} ${m.success * 360}deg,#24456a 0)">
+        <div class="gauge" style="background:conic-gradient(${color} ${m.success * 360}deg,#e6ddc8 0)">
           <div><strong>${pct(m.success)}</strong><small>chance of success</small></div>
         </div>
         <div>
@@ -1017,7 +1110,7 @@ function designCode() { return "ORB-" + btoa(JSON.stringify(state)); }
 function validDesign(s) {
   return s && DIFF[s.difficulty] && DEST[s.dest] && OBJ[s.objective] && APPROACH[s.approach] && LAUNCH[s.launcher] &&
     PROP[s.prop] && TEST[s.test] && Array.isArray(s.instr) && s.instr.length && s.instr.every(k => INSTR[k]) &&
-    LIFE[s.lifetime] && POWER[s.power] && BATTERY[s.battery] && COMMS[s.comms];
+    (LIFE[s.lifetime] || s.approach === "flyby") && POWER[s.power] && BATTERY[s.battery] && COMMS[s.comms];
 }
 
 /* ---------- Step 5: Launch ---------- */
@@ -1026,6 +1119,7 @@ const PHASES = [
   { id: "ops", lbl: "Science" }, { id: "data", lbl: "Send home" }
 ];
 function renderLaunch() {
+  if (missing().length) return needPanel("A few choices are still missing.");
   const m = compute(state);
   const issues = m.checks.filter(c => c.block && !c.pass).map(c => c.title.toLowerCase());
   return `
@@ -1240,7 +1334,7 @@ async function runFlight() {
     await Promise.all([moveCraft(0.94, 1200), countTo("dDay", Math.round(m.days * 0.75), m.days)]);
     if (breaks(m.p.arrive)) { lost = true; lostAt = "arrival"; log(`Contact was lost while arriving at ${m.d.name}.`, "failure"); setPhase("arrive", "lost"); }
     else {
-      log(`Arrived at ${m.d.name}${m.approach === "orbit" ? " and went into orbit" : ""}! 🎉`, "good");
+      log(`Arrived at ${m.d.name}${m.s.approach === "orbit" ? " and went into orbit" : ""}! 🎉`, "good");
       if (m.landing) {
         await sleep(700);
         if (breaks(m.p.land)) { lost = true; lostAt = "landing"; log(`The ${m.gear.name.toLowerCase()} failed. The lander crashed.`, "failure"); setPhase("arrive", "lost"); }
@@ -1344,6 +1438,27 @@ function analysis(r) {
 /* ---------- Leaderboard ---------- */
 const LB_KEY = "orbitalMissionControl.leaderboard.v1";
 function lbAll() { const v = store.get(LB_KEY); return Array.isArray(v) ? v : []; }
+let gdb = null, globalRows = [], globalState = "loading", globalWriteFailed = false, lbScope = "global";
+function cleanEntry(d, id) {   // rows written by other players are untrusted: keep only plain, bounded values
+  if (!d || typeof d !== "object") return null;
+  return { id: String(id), team: String(d.team || "Team").slice(0, 40), dest: String(d.dest || ""), objective: String(d.objective || ""),
+    difficulty: String(d.difficulty || ""), score: clamp(Number(d.score) || 0, 0, 100), science: clamp(Number(d.science) || 0, 0, 100),
+    spent: Number(d.spent) || 0, design: String(d.design || "").slice(0, 220), code: String(d.code || "").slice(0, 700) };
+}
+function refreshLB() { const el = $("lbPanel"); if (el) el.outerHTML = leaderboardPanel(); }
+(async () => {
+  try { gdb = (window.claude && window.claude.use) ? await window.claude.use("db") : null; } catch (e) { gdb = null; }
+  if (!gdb) { globalState = "off"; refreshLB(); return; }
+  const timer = setTimeout(() => { if (globalState === "loading") { globalState = "off"; refreshLB(); } }, 10000);
+  try {
+    gdb.collection("scores").orderBy("score", "desc").limit(100).onSnapshot(snap => {
+      clearTimeout(timer); globalState = "on";
+      globalRows = snap.docs.map(d => cleanEntry(d.data(), d.id)).filter(Boolean).sort((a, b) => b.score - a.score);
+      refreshLB();
+    }, () => { clearTimeout(timer); if (globalState !== "on") { globalState = "off"; refreshLB(); } });
+  } catch (e) { clearTimeout(timer); globalState = "off"; refreshLB(); }
+})();
+
 function lbAdd(r) {
   const entry = {
     id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
@@ -1354,31 +1469,49 @@ function lbAdd(r) {
   };
   const all = lbAll(); all.push(entry);
   all.sort((a, b) => b.score - a.score);
-  const saved = store.set(LB_KEY, all.slice(0, 100));
-  return saved ? entry.id : null;
+  store.set(LB_KEY, all.slice(0, 100));
+  if (gdb) {
+    try { gdb.collection("scores").doc(entry.id).set(entry).catch(() => { globalWriteFailed = true; refreshLB(); }); }
+    catch (e) { globalWriteFailed = true; }
+  }
+  return entry.id;
 }
 function leaderboardPanel() {
-  const all = lbAll();
-  if (!all.length && step === 1) return "";
-  const rows = (lbFilter === "this" ? all.filter(e => e.dest === state.dest && e.objective === state.objective) : all).slice(0, 10);
+  const useGlobal = lbScope === "global" && globalState === "on";
+  const src = useGlobal ? globalRows : lbAll().map(e => cleanEntry(e, e.id)).filter(Boolean);
+  const canFilter = state.dest && state.objective;
+  const rows = (lbFilter === "this" && canFilter ? src.filter(e => e.dest === state.dest && e.objective === state.objective) : src).slice(0, 15);
+  let msg = "";
+  if (lbScope === "global" && globalState === "loading") msg = "Loading the global leaderboard…";
+  else if (lbScope === "global" && globalState === "off") msg = "The global leaderboard isn't reachable right now, so these are the scores from this device. Open the game from its shared link while signed in to see everyone's.";
+  else if (useGlobal && globalWriteFailed) msg = "Your score was saved on this device, but you don't have permission to post to the global leaderboard.";
   const body = rows.length ? rows.map((e, i) => `<tr class="${e.id === lastEntryId ? "me" : ""}">
       <td class="rank">${i + 1}</td>
       <td><b>${esc(e.team)}</b><div class="design">${esc(DIFF[e.difficulty] ? DIFF[e.difficulty].name : "")}</div></td>
-      <td>${esc(DEST[e.dest] ? DEST[e.dest].name : e.dest)}<div class="design">${esc(OBJ[e.objective] ? OBJ[e.objective].name : "")}</div></td>
+      <td>${esc(DEST[e.dest] ? DEST[e.dest].name : "")}<div class="design">${esc(OBJ[e.objective] ? OBJ[e.objective].name : "")}</div></td>
       <td><b>${e.score}</b></td><td>${e.science}</td><td>${money(e.spent)}</td>
       <td class="design">${esc(e.design)}</td>
       <td><button class="btn ghost small" type="button" data-trycode="${esc(e.code)}">Try it</button></td></tr>`).join("")
-    : `<tr><td colspan="8" class="design">No missions yet for ${esc(currentDest().name)} · ${esc(OBJ[state.objective].name)}. Be the first!</td></tr>`;
+    : `<tr><td colspan="8" class="design">No missions here yet. Be the first!</td></tr>`;
   return `<section class="panel" id="lbPanel">
     <div class="panel-head"><h3>🏆 Leaderboard</h3>
       <div class="lb-tools">
-        <button class="pill ${lbFilter === "this" ? "sel" : ""}" type="button" data-lb="this">This mission</button>
-        <button class="pill ${lbFilter === "all" ? "sel" : ""}" type="button" data-lb="all">All missions</button>
+        <button class="pill ${lbScope === "global" ? "sel" : ""}" type="button" data-lbscope="global">🌍 Global</button>
+        <button class="pill ${lbScope === "device" ? "sel" : ""}" type="button" data-lbscope="device">This device</button>
       </div></div>
-    <p class="why">Teams compete on the same mission. Compare designs, or tap "Try it" to load a design. (Saved on this device.)</p>
+    <div class="lb-tools" style="margin:10px 0 16px">
+      ${canFilter ? `<button class="pill ${lbFilter === "this" ? "sel" : ""}" type="button" data-lb="this">This mission</button>` : ""}
+      <button class="pill ${lbFilter === "all" || !canFilter ? "sel" : ""}" type="button" data-lb="all">All missions</button>
+    </div>
+    ${msg ? `<p class="lb-msg">${msg}</p>` : ""}
     <div class="lb-wrap"><table class="lb"><thead><tr><th>#</th><th>Team</th><th>Mission</th><th>Score</th><th>Science</th><th>Spent</th><th>Design</th><th></th></tr></thead>
     <tbody>${body}</tbody></table></div>
   </section>`;
+}
+function renderLBPage() {
+  return `<div class="pagehead"><div class="eyebrow">Hall of fame</div><h2>Leaderboard</h2><p>The best missions from every team. Tap "Try it" to load a design.</p></div>
+    ${leaderboardPanel()}
+    <div class="nav"><button class="btn ghost" type="button" data-nav="1">← Back to the game</button><span></span></div>`;
 }
 
 function showResult(r) {
@@ -1475,11 +1608,11 @@ async function copyText(text, btn, label) {
 
 /* ---------- Render & events ---------- */
 function render() {
-  const views = { 1: renderTeam, 2: renderMission, 3: renderBuild, 4: renderCheck, 5: renderLaunch };
+  const views = { 1: renderTeam, 2: () => renderWizard(2), 3: () => renderWizard(3), 4: renderCheck, 5: renderLaunch, 6: renderLBPage };
   $("stage").innerHTML = views[step]();
   renderStepper();
   renderHUD();
-  if (step === 4) {
+  if (step === 4 && $("copyCode")) {
     $("copyCode").addEventListener("click", () => copyText(designCode(), $("copyCode"), "Copy design code"));
     $("loadCode").addEventListener("click", () => {
       const raw = $("codeIn").value.trim().replace(/^ORB-/, "");
@@ -1490,7 +1623,7 @@ function render() {
       } catch (e) { $("codeNote").textContent = "That code didn't work. Check you copied all of it."; }
     });
   }
-  if (step === 5) { craftProgress = 0; moveCraft(0, 1); $("beginBtn").addEventListener("click", runFlight); }
+  if (step === 5 && $("beginBtn")) { craftProgress = 0; moveCraft(0, 1); $("beginBtn").addEventListener("click", runFlight); }
 }
 
 $("stage").addEventListener("click", e => {
@@ -1498,15 +1631,23 @@ $("stage").addEventListener("click", e => {
   const t = e.target;
   const size = t.closest("[data-size]");
   if (size) { team.size = +size.dataset.size; render(); return; }
+  const sc = t.closest("[data-lbscope]");
+  if (sc) { lbScope = sc.dataset.lbscope; refreshLB(); return; }
+  const gt = t.closest("[data-goto]");
+  if (gt) {
+    const k = gt.dataset.goto;
+    if (k === "size" || k === "difficulty") { go(1); return; }
+    const q = QS.find(x => x.id === k); qi[q.step] = Math.max(0, qList(q.step).indexOf(q)); go(q.step); return;
+  }
+  const qb = t.closest("[data-q]");
+  if (qb && !qb.disabled) { qi[step] = +qb.dataset.q; go(step); return; }
   const lb = t.closest("[data-lb]");
-  if (lb) { lbFilter = lb.dataset.lb; const y = scrollY; render(); scrollTo(0, y); return; }
+  if (lb) { lbFilter = lb.dataset.lb; refreshLB(); return; }
   const tryc = t.closest("[data-trycode]");
   if (tryc) {
     try { const s = JSON.parse(atob(tryc.dataset.trycode.replace(/^ORB-/, ""))); if (validDesign(s)) { state = s; go(4); } } catch (_) {}
     return;
   }
-  const tb = t.closest("[data-tab]") || t.closest("[data-tabnav]");
-  if (tb) { tab = tb.dataset.tab || tb.dataset.tabnav; if (tb.dataset.tabnav) go(3); else { const y = scrollY; render(); scrollTo(0, y); } return; }
   const opt = t.closest("[data-group]");
   if (opt) {
     const g = opt.dataset.group, k = opt.dataset.key;
@@ -1519,7 +1660,7 @@ $("stage").addEventListener("click", e => {
     return;
   }
   const nav = t.closest("[data-nav]");
-  if (nav && !nav.disabled) { if (+nav.dataset.nav === 3 && step !== 3) tab = "engineer"; go(+nav.dataset.nav); }
+  if (nav && !nav.disabled) { const n = +nav.dataset.nav; if ((n === 2 || n === 3) && n > step) qi[n] = firstOpen(n); go(n); }
 });
 
 // Names: update in place so typing doesn't lose focus
@@ -1549,11 +1690,49 @@ $("loadBtn").addEventListener("click", () => {
 });
 $("resetBtn").addEventListener("click", () => {
   if (flying) return;
-  if (!confirm("Start a brand-new mission? Your team and leaderboard stay.")) return;
-  state = JSON.parse(JSON.stringify(DEFAULT));
+  const keep = state.difficulty;
+  state = JSON.parse(JSON.stringify(DEFAULT)); state.difficulty = keep; qi = { 2: 0, 3: 0 };
   $("saveNote").textContent = "New mission started.";
   go(2);
 });
+
+$("lbBtn").addEventListener("click", () => { if (!flying) go(6); });
+
+/* ---------- Moving space background ---------- */
+(function space() {
+  const c = $("space"), x = c.getContext("2d");
+  let W, H, stars = [], shoot = null, last = 0;
+  function size() {
+    const d = Math.min(2, window.devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight; c.width = W * d; c.height = H * d; x.setTransform(d, 0, 0, d, 0, 0);
+    stars = Array.from({ length: Math.round(W * H / 5200) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.5 + 0.3, s: Math.random() * 0.12 + 0.02, p: Math.random() * 6.28, t: Math.random() * 1.5 + 0.5 }));
+  }
+  function draw(t) {
+    const dt = Math.min(50, t - last); last = t;
+    x.clearRect(0, 0, W, H);
+    for (const [gx, gy, gr, col] of [[0.15, 0.25, 0.45, "185,162,255"], [0.85, 0.6, 0.5, "95,224,245"], [0.5, 1.0, 0.5, "255,160,190"]]) {
+      const g = x.createRadialGradient(gx * W, gy * H, 0, gx * W, gy * H, gr * Math.max(W, H));
+      g.addColorStop(0, `rgba(${col},.16)`); g.addColorStop(1, `rgba(${col},0)`);
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+    }
+    for (const s of stars) {
+      s.x -= s.s * dt * 0.06; if (s.x < -2) { s.x = W + 2; s.y = Math.random() * H; }
+      x.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(s.p + t * 0.001 * s.t));
+      x.fillStyle = "#fff"; x.beginPath(); x.arc(s.x, s.y, s.r, 0, 6.28); x.fill();
+    }
+    x.globalAlpha = 1;
+    if (!shoot && Math.random() < 0.004) shoot = { x: Math.random() * W, y: Math.random() * H * 0.5, l: 0 };
+    if (shoot) {
+      shoot.x += dt * 0.6; shoot.y += dt * 0.25; shoot.l += dt;
+      const g = x.createLinearGradient(shoot.x - 90, shoot.y - 38, shoot.x, shoot.y);
+      g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(255,255,255,.9)");
+      x.strokeStyle = g; x.lineWidth = 2; x.beginPath(); x.moveTo(shoot.x - 90, shoot.y - 38); x.lineTo(shoot.x, shoot.y); x.stroke();
+      if (shoot.l > 900) shoot = null;
+    }
+    if (!REDUCED) requestAnimationFrame(draw);
+  }
+  addEventListener("resize", size); size(); requestAnimationFrame(draw);
+})();
 
 render();
 </script>

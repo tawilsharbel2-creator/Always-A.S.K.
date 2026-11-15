@@ -420,6 +420,15 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
 .facts{grid-template-columns:1fr;gap:6px}
 .facts div{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .facts span{margin:0}
+.flight-svg{background:#150d3a}
+.flight-status{margin:14px 0 0;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font:600 17px/1.4 "DM Sans",sans-serif;border:2.5px solid var(--ink);min-height:54px}
+.dash{grid-template-columns:repeat(3,1fr)}
+.log{max-height:520px}
+.sc-row{display:flex;gap:18px;align-items:center;justify-content:center}
+.sc-row .sc-mini{flex:1;min-width:0;margin:0}
+.rk{flex:0 0 120px;text-align:center;font-size:13px;font-weight:700;color:var(--ink)}
+.rk svg{width:100%;height:auto;display:block;background:#bfe3ff;border:2.5px solid var(--ink);border-radius:14px;margin-bottom:6px}
+@media (max-width:720px){.rk{flex-basis:76px;font-size:11px}}
 </style>
 </head>
 <body>
@@ -436,7 +445,7 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
     </div>
     <div class="top-right">
       <button class="btn ghost small" id="lbBtn" type="button">🏆 Leaderboard</button>
-      <div class="credit"><span class="dot"></span>Made by <strong>Always A.S.K.</strong></div>
+      <div class="credit"><span class="dot"></span>Made by <strong>Always A.S.K</strong></div>
     </div>
   </div>
 </header>
@@ -473,13 +482,13 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
 <footer class="foot">
   <div class="wrap">
     <span>ORBITAL Mission Control · a space mission design game</span>
-    <span>Made by <strong>Always A.S.K.</strong></span>
+    <span>Made by <strong>Always A.S.K</strong></span>
   </div>
 </footer>
 
 <script>
 /* =========================================================
-   ORBITAL MISSION CONTROL — made by Always A.S.K.
+   ORBITAL MISSION CONTROL — made by Always A.S.K
    Distances, sunlight and the rocket equation follow real physics.
    Costs (Mission Credits), speed-change budgets and risk odds are
    simplified game values chosen for learning, not real mission data.
@@ -603,9 +612,9 @@ const POWER = {
   solar: { name: "Solar Panels", desc: "Cheap and light. Weaker the further you go from the Sun.", short: "Needs sunlight",
            rated: 3, solar: true, mass: 60, cost: 40, rel: 0.97 },
   wings: { name: "Giant Solar Wings", desc: "Huge panels that still work far from the Sun. Heavy!", short: "Needs sunlight",
-           rated: 18, solar: true, mass: 350, cost: 120, rel: 0.96, real: "Real: Juno and Europa Clipper use giant solar wings at Jupiter." },
+           rated: 18, solar: true, mass: 350, cost: 120, rel: 0.96, real: "Real: Juno and Europa Clipper were built with giant solar wings to work near Jupiter." },
   rtg:   { name: "Nuclear Generators", desc: "Work anywhere, even in the dark or in dust storms. Very expensive.", short: "Works in the dark",
-           rated: 0.7, solar: false, mass: 150, cost: 280, rel: 0.99, real: "Real: Curiosity, Perseverance and Cassini use nuclear power." }
+           rated: 0.7, solar: false, mass: 150, cost: 280, rel: 0.99, real: "Real: the Curiosity and Perseverance rovers run on nuclear power, and Cassini did too." }
 };
 
 const BATTERY = {
@@ -967,7 +976,7 @@ function renderWizard(n) {
     </div>
     <div class="qdots">${dots}</div>
     ${handoff(q.role)}
-    ${n === 3 ? `<section class="panel"><div class="sc-mini">${spacecraftSVG()}</div>${partChips()}</section>` : ""}
+    ${n === 3 ? `<section class="panel"><div class="sc-row">${rocketPreview()}<div class="sc-mini">${spacecraftSVG()}</div></div>${partChips()}</section>` : ""}
     <section class="panel">${cards}</section>
     <div class="nav">
       ${i > 0 ? `<button class="btn ghost" type="button" data-q="${i - 1}">← Back</button>` : `<button class="btn ghost" type="button" data-nav="${n - 1}">← Back</button>`}
@@ -1118,6 +1127,48 @@ const PHASES = [
   { id: "launch", lbl: "Launch" }, { id: "cruise", lbl: "Travel" }, { id: "arrive", lbl: "Arrive" },
   { id: "ops", lbl: "Science" }, { id: "data", lbl: "Send home" }
 ];
+function starDots(n, w, h, seed) {
+  let x = seed, out = "";
+  const r = () => (x = (x * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < n; i++) out += `<circle cx="${(r() * w).toFixed(1)}" cy="${(r() * h).toFixed(1)}" r="${(r() * 1.1 + 0.3).toFixed(2)}" fill="#fff" opacity="${(r() * 0.6 + 0.3).toFixed(2)}"/>`;
+  return out;
+}
+function rocketArt(kind, live) {
+  const k = { small: 0.74, medium: 0.9, heavy: 1.06 }[kind] || 0.9;
+  const id = n => live ? ` id="${n}"` : "";
+  const side = kind === "medium" ? [9, 192] : kind === "heavy" ? [16, 156] : null;
+  const stripe = { small: "#7be0b5", medium: "#6b3df5", heavy: "#ff6b4a" }[kind] || "#6b3df5";
+  let sides = "", sideFire = "";
+  if (side) for (const x of [305 - side[0], 335]) {
+    const w = side[0], top = side[1];
+    sides += `<path d="M${x} ${top} q${w / 2} ${-w * 1.5} ${w} 0 V238 H${x}Z" fill="#f4f4f4" stroke="#1b1235" stroke-width="2"/><rect x="${x}" y="${top + 18}" width="${w}" height="5" fill="${stripe}"/>`;
+    sideFire += `<path d="M${x} 238 q${w / 2} ${w * 4} ${w} 0z" fill="url(#flame)"/>`;
+  }
+  const fins = side ? "" : `<path d="M306 214 l-14 24 h14z M334 214 l14 24 h-14z" fill="#ff6b4a" stroke="#1b1235" stroke-width="2"/>`;
+  return `<g transform="translate(320 238) scale(${k}) translate(-320 -238)">
+    <g${id("booster")}>${sides}<rect x="306" y="170" width="28" height="68" fill="#f4f4f4" stroke="#1b1235" stroke-width="2"/>${fins}<rect x="306" y="196" width="28" height="7" fill="#1b1235"/></g>
+    <rect x="308" y="132" width="24" height="38" fill="#fff" stroke="#1b1235" stroke-width="2"/>
+    <rect x="308" y="150" width="24" height="5" fill="${stripe}"/>
+    ${live ? `<g id="payload" opacity="0"><rect x="313" y="104" width="14" height="18" rx="2" fill="#e0a93a" stroke="#1b1235" stroke-width="1.5"/><rect x="299" y="109" width="12" height="7" fill="#2f7be0" stroke="#fff"/><rect x="329" y="109" width="12" height="7" fill="#2f7be0" stroke="#fff"/></g>` : ""}
+    <path${id("fairL")} d="M320 92 q-13 16 -12 40 h12z" fill="#ffd84d" stroke="#1b1235" stroke-width="2"/>
+    <path${id("fairR")} d="M320 92 q13 16 12 40 h-12z" fill="#ffd84d" stroke="#1b1235" stroke-width="2"/>
+    ${live ? `<g id="fire" opacity="0"><path d="M308 238 q12 62 24 0z" fill="url(#flame)"><animate attributeName="d" dur=".18s" repeatCount="indefinite" values="M308 238 q12 62 24 0z;M308 238 q12 78 24 0z;M308 238 q12 62 24 0z"/></path>${sideFire}</g>` : ""}
+  </g>`;
+}
+function rocketPreview() {
+  if (!state.launcher) return "";
+  return `<div class="rk"><svg viewBox="268 78 104 166" role="img" aria-label="Picture of your ${LAUNCH[state.launcher].name}">${rocketArt(state.launcher, false)}</svg><span>${LAUNCH[state.launcher].name}</span></div>`;
+}
+function destArt(m) {
+  const cx = 560, cy = 150, k = m.s.dest;
+  if (k === "asteroid") return `<g id="destG"><path d="M${cx - 26} ${cy - 6} q6 -22 30 -18 q24 2 24 22 q0 22 -26 24 q-30 2 -28 -28z" fill="#9aa7b1" stroke="#fff" stroke-width="2"/><circle cx="${cx - 8}" cy="${cy - 4}" r="5" fill="#6f7d8a"/><circle cx="${cx + 10}" cy="${cy + 8}" r="7" fill="#6f7d8a"/></g>`;
+  const base = { moon: "#c9d0d8", mars: "#e0683f", europa: "#eadcbc" }[k];
+  let extra = "";
+  if (k === "moon") extra = `<circle cx="${cx - 12}" cy="${cy - 10}" r="6" fill="#98a1ae"/><circle cx="${cx + 10}" cy="${cy + 6}" r="9" fill="#98a1ae"/><circle cx="${cx + 14}" cy="${cy - 16}" r="4" fill="#a3acb8"/><circle cx="${cx - 8}" cy="${cy + 16}" r="5" fill="#a3acb8"/>`;
+  if (k === "mars") extra = `<ellipse cx="${cx}" cy="${cy - 30}" rx="13" ry="5" fill="#fff"/><circle cx="${cx + 10}" cy="${cy + 4}" r="8" fill="#b04a2c"/><circle cx="${cx - 14}" cy="${cy + 12}" r="5" fill="#b9512f"/><path d="M${cx - 26} ${cy - 6} q20 8 44 -4" stroke="#b04a2c" stroke-width="3" fill="none"/>`;
+  if (k === "europa") extra = `<g stroke="#b4553a" stroke-width="1.6" fill="none"><path d="M${cx - 30} ${cy - 10} q30 14 60 -6"/><path d="M${cx - 26} ${cy + 14} q24 -20 54 -2"/><path d="M${cx - 10} ${cy - 32} q8 30 -6 62"/><path d="M${cx + 12} ${cy - 30} q-10 28 6 60"/></g>`;
+  return `<g id="destG"><circle cx="${cx}" cy="${cy}" r="34" fill="${base}" stroke="#fff" stroke-width="2"/><clipPath id="dclip"><circle cx="${cx}" cy="${cy}" r="33"/></clipPath><g clip-path="url(#dclip)">${extra}<circle cx="${cx + 18}" cy="${cy + 14}" r="40" fill="#000" opacity=".18"/></g></g>`;
+}
 function renderLaunch() {
   if (missing().length) return needPanel("A few choices are still missing.");
   const m = compute(state);
@@ -1126,33 +1177,80 @@ function renderLaunch() {
     <div class="pagehead">
       <div class="eyebrow">Step 5 · ${esc(m.d.name)}</div>
       <h2>Ready… set… launch!</h2>
-      <p>Watch the mission fly. When something goes wrong, the right team member decides what to do.</p>
+      <p>Watch the whole mission, from the launch pad to the last picture sent home. Things will go right and wrong, and your team makes the calls.</p>
     </div>
     <section class="panel">
       ${issues.length ? `<div class="notice">⚠️ You're over the limit on: <b>${issues.join(", ")}</b>. This will make the mission harder.</div>` : ""}
-      <svg class="flight-svg" viewBox="0 0 640 230" role="img" aria-label="Path from Earth to ${esc(m.d.name)}">
+
+      <svg class="flight-svg" id="sceneLaunch" viewBox="0 0 640 300" role="img" aria-label="The rocket on the launch pad">
         <defs>
-          <radialGradient id="gE" cx="35%" cy="30%"><stop offset="0" stop-color="#9fd4ff"/><stop offset=".55" stop-color="#2f6fd0"/><stop offset="1" stop-color="#123266"/></radialGradient>
-          <radialGradient id="gD" cx="35%" cy="30%"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="${m.d.color}"/><stop offset="1" stop-color="#1b2533"/></radialGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f7fd6"/><stop offset="1" stop-color="#bfe3ff"/></linearGradient>
+          <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c2"/><stop offset=".5" stop-color="#ffb02e"/><stop offset="1" stop-color="#ff5a2e" stop-opacity="0"/></linearGradient>
         </defs>
-        <path id="traj" d="M70 170 Q320 -10 570 170" fill="none" stroke="#4570a0" stroke-width="2" stroke-dasharray="6 8"/>
-        <path id="trajDone" d="M70 170 Q320 -10 570 170" fill="none" stroke="#5fe0f5" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="70" cy="170" r="26" fill="url(#gE)"/>
-        <text x="70" y="216" fill="#b4c8dd" font-size="14" text-anchor="middle" font-family="Inter">Earth</text>
-        <circle cx="570" cy="170" r="${m.d.orb === "asteroid" ? 14 : 24}" fill="url(#gD)"/>
-        <text x="570" y="216" fill="#b4c8dd" font-size="14" text-anchor="middle" font-family="Inter">${esc(m.d.name)}</text>
-        <g id="craft"><circle r="9" fill="#5fe0f5" opacity=".5" filter="url(#glow)"/><circle r="4.5" fill="#f2f7fd"/></g>
+        <rect width="640" height="300" fill="url(#sky)"/>
+        <rect id="spaceFade" width="640" height="300" fill="#150d3a" opacity="0"/>
+        <g id="lStars" opacity="0">${starDots(70, 640, 300, 77)}</g>
+        <g id="clouds"><ellipse cx="120" cy="90" rx="46" ry="14" fill="#fff" opacity=".85"/><ellipse cx="500" cy="60" rx="60" ry="16" fill="#fff" opacity=".8"/><ellipse cx="420" cy="150" rx="38" ry="11" fill="#fff" opacity=".7"/></g>
+        <g id="groundG">
+          <rect x="0" y="250" width="640" height="50" fill="#3d8a4e"/>
+          <rect x="0" y="246" width="640" height="6" fill="#2f6e3e"/>
+          <rect x="262" y="238" width="116" height="12" rx="2" fill="#7d8791" stroke="#1b1235" stroke-width="2"/>
+          <rect x="372" y="110" width="12" height="130" fill="#b3413a" stroke="#1b1235" stroke-width="2"/>
+          <g stroke="#1b1235" stroke-width="2"><line x1="372" y1="130" x2="384" y2="150"/><line x1="384" y1="150" x2="372" y2="170"/><line x1="372" y1="170" x2="384" y2="190"/><line x1="384" y1="190" x2="372" y2="210"/></g>
+          <rect id="arm" x="340" y="150" width="34" height="6" fill="#b3413a" stroke="#1b1235" stroke-width="1.5"/>
+          <g id="smoke" opacity="0"><ellipse cx="290" cy="244" rx="46" ry="14" fill="#fff"/><ellipse cx="352" cy="244" rx="52" ry="16" fill="#f1f1f1"/><ellipse cx="320" cy="238" rx="38" ry="14" fill="#fff"/></g>
+        </g>
+        <g id="rocketG">${rocketArt(state.launcher, true)}</g>
+        <text id="altTxt" x="20" y="30" fill="#fff" font-size="15" font-weight="700" font-family="Space Mono, monospace" stroke="#1b1235" stroke-width=".4">ALTITUDE 0 km</text>
       </svg>
+
+      <svg class="flight-svg" id="sceneTrip" viewBox="0 0 640 300" role="img" aria-label="Map of the journey from Earth to ${esc(m.d.name)}" style="display:none">
+        <defs>
+          <radialGradient id="gE" cx="35%" cy="30%"><stop offset="0" stop-color="#9fd4ff"/><stop offset=".6" stop-color="#2f6fd0"/><stop offset="1" stop-color="#123266"/></radialGradient>
+          <radialGradient id="gSun" cx="0" cy="0" r="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".4" stop-color="#ffc94d"/><stop offset="1" stop-color="#ffc94d" stop-opacity="0"/></radialGradient>
+        </defs>
+        ${starDots(110, 640, 300, 31)}
+        <circle cx="0" cy="0" r="120" fill="url(#gSun)"/>
+        <text x="14" y="26" fill="#ffe9a8" font-size="12" font-family="DM Sans, sans-serif">Sun</text>
+        ${state.dest === "moon" ? "" : `<circle cx="80" cy="200" r="46" fill="none" stroke="#ffffff33" stroke-dasharray="3 5"/>
+        <g><circle r="5" fill="#d7dde5"><animateMotion dur="9s" repeatCount="indefinite" path="M126 200 a46 46 0 1 1 -92 0 a46 46 0 1 1 92 0"/></circle></g>`}
+        <circle cx="80" cy="200" r="28" fill="url(#gE)" stroke="#fff" stroke-width="2"/>
+        <path d="M66 188 q8 -8 16 0 q6 6 -2 12 q-10 4 -14 -12z M88 206 q8 -2 10 6 q-4 8 -12 2z" fill="#4fb36a"/>
+        <text x="80" y="252" fill="#fff" font-size="14" font-weight="700" text-anchor="middle" font-family="DM Sans, sans-serif">Earth</text>
+        <path id="traj" d="M104 186 Q320 -30 584 104" fill="none" stroke="#ffffff66" stroke-width="2" stroke-dasharray="5 8"/>
+        <path id="trajDone" d="M104 186 Q320 -30 584 104" fill="none" stroke="#ffd84d" stroke-width="3.5" stroke-linecap="round"/>
+        <g id="ticks"></g>
+        <circle id="orbitRing" cx="560" cy="150" r="52" fill="none" stroke="#ffd84d" stroke-width="2" stroke-dasharray="4 5" opacity="0"/>
+        ${destArt(m)}
+        <text x="560" y="222" fill="#fff" font-size="14" font-weight="700" text-anchor="middle" font-family="DM Sans, sans-serif">${esc(m.d.name)}</text>
+        <g id="marks"></g>
+        <g id="craft">
+          <g id="craftRot">
+            <path id="thrust" d="M-12 0 l-16 -4 v8z" fill="#ffb02e" opacity="0"><animate attributeName="opacity" dur=".2s" repeatCount="indefinite" values=".4;1;.4"/></path>
+            <rect x="-3" y="-16" width="6" height="11" fill="#2f7be0" stroke="#fff" stroke-width="1"/>
+            <rect x="-3" y="5" width="6" height="11" fill="#2f7be0" stroke="#fff" stroke-width="1"/>
+            <rect x="-9" y="-6" width="18" height="12" rx="2" fill="#e0a93a" stroke="#fff" stroke-width="1.5"/>
+            <path d="M9 -5 q9 5 0 10z" fill="#fff"/>
+          </g>
+        </g>
+      </svg>
+
+      <div class="flight-status" id="fStatus">On the launch pad. Press the button when your team is ready.</div>
       <div class="dash">
         <div><span>📅 Mission day</span><strong id="dDay">0</strong></div>
+        <div><span>⛽ Fuel</span><strong id="dFuel">100%</strong></div>
         <div><span>🔋 Battery</span><strong id="dBat">100%</strong></div>
+        <div><span>💪 Spacecraft health</span><strong id="dHealth">100%</strong></div>
+        <div><span>🔬 Science so far</span><strong id="dSci">0</strong></div>
         <div><span>📡 Data home</span><strong id="dData">0%</strong></div>
       </div>
       <div class="phase-strip">${PHASES.map(p => `<div class="phase" id="ph-${p.id}">${p.lbl}</div>`).join("")}</div>
       <div style="text-align:center">
         <div class="countdown" id="countdown"></div>
-        <button class="btn go big" id="beginBtn" type="button">Start countdown</button>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn go big" id="beginBtn" type="button">Start countdown</button>
+          <button class="btn ghost" id="speedBtn" type="button">⏩ Speed: normal</button>
+        </div>
       </div>
       <div id="decisionSlot"></div>
       <ul class="log" id="log" aria-live="polite"></ul>
@@ -1164,38 +1262,51 @@ function renderLaunch() {
 }
 
 /* ---------- Flight ---------- */
-const sleep = ms => new Promise(r => setTimeout(r, REDUCED ? Math.min(ms, 200) : ms));
+let speed = 1;
+const sleep = ms => new Promise(r => setTimeout(r, REDUCED ? Math.min(ms, 120) : ms / speed));
 const roll = p => Math.random() < p;
-let craftProgress = 0;
-function moveCraft(to, ms = 1400) {
-  const path = $("traj"), done = $("trajDone"), craft = $("craft");
-  if (!path) return Promise.resolve();
-  const len = path.getTotalLength();
-  done.style.strokeDasharray = len;
-  const from = craftProgress, start = performance.now(), dur = REDUCED ? 1 : ms;
-  return new Promise(res => {
-    function frame(t) {
-      const k = clamp((t - start) / dur, 0, 1);
-      const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      const pt = path.getPointAtLength((from + (to - from) * e) * len);
-      craft.setAttribute("transform", `translate(${pt.x},${pt.y})`);
-      done.style.strokeDashoffset = len * (1 - (from + (to - from) * e));
-      if (k < 1) requestAnimationFrame(frame); else { craftProgress = to; res(); }
-    }
-    requestAnimationFrame(frame);
-  });
-}
-function countTo(id, from, to, suffix = "", ms = 900) {
-  const el = $(id); if (!el) return Promise.resolve();
-  const start = performance.now(), dur = REDUCED ? 1 : ms;
+function tween(ms, fn) {
+  const dur = REDUCED ? 1 : ms / speed, start = performance.now();
   return new Promise(res => {
     function f(t) {
       const k = clamp((t - start) / dur, 0, 1);
-      el.textContent = Math.round(from + (to - from) * k).toLocaleString() + suffix;
+      fn(k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
       if (k < 1) requestAnimationFrame(f); else res();
     }
     requestAnimationFrame(f);
   });
+}
+let craftProgress = 0;
+function pathPoint(p) {
+  const path = $("traj"), len = path.getTotalLength();
+  const a = path.getPointAtLength(clamp(p, 0, 1) * len), b = path.getPointAtLength(clamp(p + 0.01, 0, 1) * len);
+  return { x: a.x, y: a.y, len, ang: (b.x === a.x && b.y === a.y) ? 30 : Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI };
+}
+function placeCraft(x, y, ang) { $("craft").setAttribute("transform", `translate(${x},${y})`); $("craftRot").setAttribute("transform", `rotate(${ang})`); }
+function moveCraft(to, ms = 1400) {
+  if (!$("traj")) return Promise.resolve();
+  const from = craftProgress, done = $("trajDone");
+  return tween(ms, e => {
+    const p = from + (to - from) * e, pt = pathPoint(p);
+    placeCraft(pt.x, pt.y, pt.ang);
+    done.style.strokeDasharray = pt.len; done.style.strokeDashoffset = pt.len * (1 - p);
+  }).then(() => { craftProgress = to; });
+}
+function svgEl(tag, attrs, text) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (text) el.textContent = text;
+  return el;
+}
+function mark(icon) {   // leave a little marker on the map where something happened
+  const g = $("marks"); if (!g) return;
+  const pt = pathPoint(craftProgress);
+  g.appendChild(svgEl("circle", { cx: pt.x, cy: pt.y, r: 4, fill: "#fff" }));
+  g.appendChild(svgEl("text", { x: pt.x, y: pt.y - 12, "font-size": 15, "text-anchor": "middle" }, icon));
+}
+function countTo(id, from, to, suffix = "", ms = 900) {
+  const el = $(id); if (!el) return Promise.resolve();
+  return tween(ms, e => { el.textContent = Math.round(from + (to - from) * e).toLocaleString() + suffix; });
 }
 function setPhase(id, cls) { const el = $("ph-" + id); if (el) el.className = "phase " + cls; }
 
@@ -1224,9 +1335,9 @@ function hazardFor(m) {
   const k = state.dest, land = m.landing;
   if (k === "moon" && land) {
     if (!m.W.solar) return { info: "Night falls for about 14 Earth days. Your nuclear generators keep everything running!", mult: 1.05 };
-    return { role: "systems", title: "Lunar night is coming", body: "Night here lasts about 14 Earth days. No sunlight means no solar power, and it gets colder than −170 °C.",
+    return { role: "systems", title: "Lunar night is coming", body: "Night here lasts about 14 Earth days. No sunlight means no solar power, and it drops to about −170 °C.",
       options: [
-        { label: "Go to sleep", hint: "Safe. You lose some science.", p: 0, good: 0.85, bad: 0.85, ok: "The lander slept and woke at sunrise." },
+        { label: "Go to sleep", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.92, bad: 0.92, ok: "The lander slept and woke at sunrise." },
         { label: "Keep working on battery", hint: `${pct(risk(0.5 * batt))} chance the cold breaks something.${m.B.store >= 1 ? " Your large battery helps!" : ""}`, p: risk(0.5 * batt), good: 1.0, bad: 0.6, ok: "The battery lasted all night!", fail: "The battery ran out and some parts froze.", drain: true }
       ] };
   }
@@ -1234,18 +1345,18 @@ function hazardFor(m) {
     if (!m.W.solar) return { info: "A huge dust storm hits. Nuclear power doesn't need sunlight, so you keep working!", mult: 1.05 };
     return { role: "systems", title: "Dust storm!", body: "A dust storm is blocking the Sun. In 2018 a storm like this ended the solar-powered Opportunity rover.",
       options: [
-        { label: "Power down and wait", hint: "Safe. You lose some science.", p: 0, good: 0.8, bad: 0.8, ok: "The lander waited out the storm." },
+        { label: "Power down and wait", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.9, bad: 0.9, ok: "The lander waited out the storm." },
         { label: "Keep working", hint: `${pct(risk(0.45 * batt))} chance the power runs out.${m.B.store >= 1 ? " Your large battery helps!" : ""}`, p: risk(0.45 * batt), good: 1.1, bad: 0.5, ok: "You studied the storm up close — amazing data!", fail: "The power ran out. Some systems never came back.", drain: true }
       ] };
   }
   if (k === "asteroid" && land) return { role: "director", title: "Boulders everywhere!", body: "The best spot to touch down is covered in boulders.",
     options: [
       { label: "Touch down there anyway", hint: `Better science, ${pct(risk(0.35))} chance of damage.`, p: risk(0.35), good: 1.15, bad: 0.6, ok: "Perfect touchdown between the boulders!", fail: "A boulder hit the spacecraft. Some tools broke." },
-      { label: "Pick a safer spot", hint: "Safe, a little less science.", p: 0, good: 0.9, bad: 0.9, ok: "Touched down safely on a smooth spot." }
+      { label: "Pick a safer spot", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.94, bad: 0.94, ok: "Touched down safely on a smooth spot." }
     ] };
   if (k === "europa") return { role: "scientist", title: "Dangerous radiation", body: "Jupiter blasts the area around Europa with radiation that can damage electronics.",
     options: [
-      { label: land ? "Shield the tools" : "Stay farther away", hint: "Safe, but less detail.", p: 0, good: 0.85, bad: 0.85, ok: "Played it safe and stayed healthy." },
+      { label: land ? "Shield the tools" : "Stay farther away", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.92, bad: 0.92, ok: "Played it safe and stayed healthy." },
       { label: land ? "Keep all tools out" : "Fly in close", hint: `Better science, ${pct(risk(0.35))} chance of damage.`, p: risk(0.35), good: 1.2, bad: 0.55, ok: "Incredible close-up data of the icy surface!", fail: "Radiation damaged the electronics." }
     ] };
   const flavor = {
@@ -1256,7 +1367,7 @@ function hazardFor(m) {
   return { role: "director", title: flavor[0], body: flavor[1] + " How close should you go?",
     options: [
       { label: "Go in close", hint: `Better science, ${pct(risk(0.3))} chance of trouble.`, p: risk(0.3), good: 1.15, bad: 0.65, ok: "Super-sharp close-ups!", fail: "Got too close and damaged a tool." },
-      { label: "Stay at a safe height", hint: "Safe, a little less detail.", p: 0, good: 0.92, bad: 0.92, ok: "Steady and safe." }
+      { label: "Stay at a safe height", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.95, bad: 0.95, ok: "Steady and safe." }
     ] };
 }
 
@@ -1267,121 +1378,287 @@ async function runFlight() {
   const m = compute(state);
   const sb = m.Df.sandbox;
   const riskOf = x => clamp(x * m.T.riskMult * m.Df.risk, 0, 0.95);
-  const breaks = p => sb ? false : !roll(p);   // sandbox: nothing breaks by chance
-  let mult = 1, lost = false, lostAt = "", extraCost = 0, battery = 100, reachedOps = false;
-  const events = [], decisions = [], notes = [];
+  const breaks = p => sb ? false : !roll(p);       // sandbox: nothing breaks by chance
+  const unlucky = p => !sb && roll(clamp(p * m.Df.risk, 0, 0.95));
+  let mult = 1, lost = false, lostAt = "", extraCost = 0, battery = 100, reachedOps = false, fuel = 100, sciNow = 0;
+  const events = [], decisions = [];
+  const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+  const status = t => set("fStatus", t);
+  const health = () => set("dHealth", Math.round(clamp(mult, 0, 1.5) * 100) + "%");
+  const bump = x => { mult *= x; health(); };
   const log = (text, kind = "info") => {
     const li = document.createElement("li");
     li.className = kind; li.textContent = text;
     $("log").prepend(li);
     events.push(text);
   };
+  const step = async (text, kind = "info", ms = 1300) => { status(text); log(text, kind); await sleep(ms); };
+  const burn = async to => { to = Math.max(2, Math.round(to)); await countTo("dFuel", fuel, to, "%", 700); fuel = to; };
+  const sci = async frac => { const to = Math.round(clamp(m.sci * mult * frac, 0, 100)); await countTo("dSci", sciNow, to, "", 800); sciNow = to; };
   async function decide(roleId, title, body, options) {
+    status("Waiting for a decision: " + title);
     const c = await ask(roleId, title, body, options);
     const bad = c.p > 0 && roll(c.p);
     const best = Math.max(...options.map(ev));
-    decisions.push({ role: roleId, title, label: c.label, good: ev(c) >= best - 0.02, risky: c.p > 0, went: bad ? "bad" : "ok" });
-    mult *= bad ? c.bad : c.good;
-    if (c.drain) { battery = bad ? 0 : Math.round(100 - 70 / m.B.store * 0.5); $("dBat").textContent = battery + "%"; }
-    log(`${title} — ${c.label}. ${bad ? c.fail : c.ok}`, bad ? "failure" : c.p > 0 ? "good" : "caution");
+    const smart = ev(c) >= best - 0.03;
+    decisions.push({ role: roleId, title, label: c.label, good: smart, risky: c.p > 0, went: bad ? "bad" : "ok" });
+    // The right call never costs science: a smart safe choice is free. Playing it safe when the risk was small still costs a little.
+    bump(bad ? c.bad : (smart && c.p === 0 ? Math.max(c.good, 1) : c.good));
+    if (c.cost) extraCost += c.cost;
+    if (c.fuel) await burn(fuel - c.fuel);
+    if (c.drain) { battery = bad ? 0 : Math.round(100 - 35 / m.B.store); set("dBat", battery + "%"); }
+    const verdict = smart ? (bad ? " Smart call, just bad luck." : " 🧠 Smart call!") : (c.p > 0 ? (bad ? " The risk was too high for this design." : " You got lucky — the risk was too high for this design.") : " Too careful — your design could have handled the risk.");
+    const text = `${title} — ${c.label}. ${bad ? c.fail : c.ok}${verdict}`;
+    status(bad ? c.fail : c.ok);
+    log(text, bad ? "failure" : c.p > 0 ? "good" : "caution");
+    await sleep(900);
     return !bad;
   }
+  const pick = (arr, n) => arr.map(x => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, n).map(x => x[1]);
 
   $("beginBtn").remove();
   $("launchNav").style.display = "none";
-  const cd = $("countdown");
-  for (const t of ["3", "2", "1", "LIFTOFF!"]) { cd.textContent = t; await sleep(650); }
-  cd.textContent = "";
-
-  // 1. Launch
   setPhase("launch", "now");
-  log(`🚀 Liftoff on the ${m.L.name}!`);
-  if (!m.massOK) log("The rocket is overloaded and struggling to climb…", "caution");
-  await moveCraft(0.1, 1100);
-  if (roll(m.p.launch)) { log("The spacecraft made it to space.", "good"); setPhase("launch", "ok"); }
-  else {
-    lost = true; lostAt = "launch";
-    log(m.massOK ? "The rocket had a problem and the launch failed." : "Too heavy — the rocket couldn't reach space.", "failure");
-    setPhase("launch", "lost");
-  }
 
-  // 2. Travel
-  if (!lost) {
-    setPhase("cruise", "now");
-    log(`Travelling to ${m.d.name}. The trip takes about ${tripLabel(m.days)}.`);
-    await Promise.all([moveCraft(0.4, 1300), countTo("dDay", 0, Math.round(m.days * 0.4))]);
-    await decide("systems", "Solar storm!", "The Sun just blasted out a burst of radiation. It will hit the spacecraft soon.", [
-      { label: "Power down extra systems", hint: "Safe. A small delay.", p: 0, good: 0.97, bad: 0.97, ok: "Powering down protected the electronics." },
-      { label: "Keep everything on", hint: `${pct(riskOf(0.25))} chance of damage.`, p: riskOf(0.25), good: 1.0, bad: 0.8, ok: "The spacecraft got through fine.", fail: "The radiation glitched the computer." }
+  // ---- 1. Launch pad ----
+  await step("Fuel is loaded. " + kg(m.propellant) + " of propellant on board.", "info", 1100);
+  await step(`${m.T.backup ? "All systems and their backups" : "All systems"} report ready.`, "info", 1000);
+  if (roll(0.4)) {
+    await decide("director", "Windy at the launch pad", "Strong winds are blowing across the pad. Launch now, or wait a day?", [
+      { label: "Wait for calm weather", hint: "Safe. Costs 5 MC for the extra day.", p: 0, good: 1, bad: 1, ok: "The wind dropped overnight. Perfect launch weather.", cost: 5 },
+      { label: "Launch anyway", hint: `${pct(riskOf(0.22))} chance the rocket gets shaken hard.`, p: riskOf(0.22), good: 1, bad: 0.88, ok: "The rocket punched through the wind without trouble.", fail: "The wind shook the rocket and loosened a part." }
     ]);
-    await Promise.all([moveCraft(0.7, 1200), countTo("dDay", Math.round(m.days * 0.4), Math.round(m.days * 0.75))]);
-    let engineHit = false;
-    if (!breaks(m.p.engine)) log("The engine is working perfectly.", "good");
-    else if (m.T.backup) { log("The engine broke — but the backup took over. Testing paid off!", "caution"); engineHit = true; }
-    else {
-      engineHit = true;
-      await decide("engineer", "Engine trouble!", "The main engine stopped during a burn. There's no backup.", [
-        { label: "Try a restart", hint: `${pct(riskOf(0.4))} chance it fails for good.`, p: riskOf(0.4), good: 1.0, bad: 0.4, ok: "The restart worked!", fail: "The restart failed. You arrive in a bad orbit." },
-        { label: "Limp on with small thrusters", hint: "Safe, but a worse orbit.", p: 0, good: 0.65, bad: 0.65, ok: "The small thrusters got you there slowly." }
-      ]);
-    }
-    setPhase("cruise", engineHit ? "hit" : "ok");
-  }
+  } else await step("Weather check: clear skies and light wind. Go for launch!", "good", 1000);
 
-  // 3. Arrive (and land)
+  const cd = $("countdown");
+  for (let t = 10; t >= 1; t--) {
+    cd.textContent = t;
+    if (t === 6) { status("Launch arm swings away."); $("arm").setAttribute("opacity", "0"); }
+    if (t === 3) { status("Main engines ignite!"); $("fire").setAttribute("opacity", "1"); $("smoke").setAttribute("opacity", ".9"); }
+    await sleep(520);
+  }
+  cd.textContent = "LIFTOFF!";
+  log(`🚀 Liftoff on the ${m.L.name}!`, "good"); status("Liftoff!");
+  const launchOK = roll(m.p.launch), failAt = Math.floor(Math.random() * 3);
+  const rocket = $("rocketG"), ground = $("groundG"), alt = $("altTxt");
+  const climb = (fromKm, toKm, ms) => tween(ms, e => {
+    const km = fromKm + (toKm - fromKm) * e;
+    alt.textContent = "ALTITUDE " + Math.round(km) + " km";
+    ground.setAttribute("transform", `translate(0,${Math.min(km, 60) * 5})`);
+    $("clouds").setAttribute("transform", `translate(0,${km * 4})`);
+    $("spaceFade").setAttribute("opacity", clamp(km / 90, 0, 1));
+    $("lStars").setAttribute("opacity", clamp((km - 40) / 60, 0, 1));
+    rocket.setAttribute("transform", `translate(0,${-Math.min(km, 30) * 1.2})`);
+  });
+  const failLaunch = async text => { lost = true; lostAt = "launch"; $("fire").setAttribute("opacity", "0"); await step(text, "failure", 1600); setPhase("launch", "lost"); };
+
+  await climb(0, 12, 2200);
+  cd.textContent = "";
+  if (!m.massOK) await step("The rocket is overloaded and climbing slowly…", "caution", 1200);
+  await step("Max-Q: the air is pushing on the rocket as hard as it ever will.", "info", 1000);
+  if (!launchOK && failAt === 0) await failLaunch(m.massOK ? "The rocket broke apart under the pressure. Launch failed." : "Too heavy! The rocket couldn't fight the air and gravity. Launch failed.");
   if (!lost) {
+    await climb(12, 70, 2400);
+    status("Stage separation: the empty booster drops away.");
+    log("Stage separation. The empty booster drops away.", "info");
+    await tween(1200, e => { $("booster").setAttribute("transform", `translate(${-18 * e},${120 * e}) rotate(${-25 * e} 320 200)`); $("booster").setAttribute("opacity", 1 - e); });
+    if (!launchOK && failAt === 1) await failLaunch("The second stage engine didn't light. The spacecraft fell back to Earth.");
+  }
+  if (!lost) {
+    await climb(70, 160, 2200);
+    status("The nose cone opens. Hello, space!");
+    log("The nose cone opens and falls away.", "info");
+    $("payload").setAttribute("opacity", "1");
+    await tween(1100, e => { $("fairL").setAttribute("transform", `translate(${-40 * e},${20 * e}) rotate(${-40 * e} 314 112)`); $("fairR").setAttribute("transform", `translate(${40 * e},${20 * e}) rotate(${40 * e} 326 112)`); $("fairL").setAttribute("opacity", 1 - e); $("fairR").setAttribute("opacity", 1 - e); });
+    if (!launchOK && failAt === 2) await failLaunch(m.massOK ? "The upper stage shut down early. The spacecraft never reached its path." : "Too heavy! The rocket ran out of fuel before reaching its path.");
+  }
+  if (!lost) {
+    $("fire").setAttribute("opacity", "0");
+    await step("Spacecraft separates from the rocket. It's flying on its own now!", "good", 1200);
+    await step(m.W.solar ? "Solar panels unfold and catch the sunlight." : "Nuclear generators are warm and making power.", "good", 1100);
+    await step("The antenna points at Earth… first signal received! 📡", "good", 1200);
+    if (roll(0.25)) { bump(1.03); await step("Bonus: the rocket's aim was near perfect, so you saved fuel.", "good", 1100); }
+    setPhase("launch", "ok");
+  }
+
+  // ---- 2. Travel ----
+  if (!lost) {
+    $("sceneLaunch").style.display = "none"; $("sceneTrip").style.display = "";
+    craftProgress = 0; await moveCraft(0.04, 400);
+    for (const p of [0.25, 0.5, 0.75]) { const pt = pathPoint(p); $("ticks").appendChild(svgEl("circle", { cx: pt.x, cy: pt.y, r: 3, fill: "#ffffff99" })); }
+    setPhase("cruise", "now");
+    $("thrust").setAttribute("opacity", "1");
+    await step(`Engine burn! Heading for ${m.d.name}. The trip takes about ${tripLabel(m.days)}.`, "info", 1200);
+    await burn(m.P.ion ? 92 : 62);
+    if (!m.P.ion) $("thrust").setAttribute("opacity", "0");
+
+    let cruiseHit = false;
+    const storm = () => decide("systems", "Solar storm!", "The Sun just blasted out a burst of radiation. It will hit the spacecraft soon.", [
+      { label: "Power down extra systems", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.98, bad: 0.98, ok: "Powering down protected the electronics." },
+      { label: "Keep everything on", hint: `${pct(riskOf(0.25))} chance of damage.`, p: riskOf(0.25), good: 1.0, bad: 0.8, ok: "The spacecraft got through the storm fine.", fail: "The radiation glitched the computer." }
+    ]);
+    const engineCheck = async () => {
+      $("thrust").setAttribute("opacity", "1");
+      await step("Mid-course engine burn…", "info", 1000);
+      await burn(fuel - (m.P.ion ? 6 : 10));
+      if (!breaks(m.p.engine)) await step("The engine fired perfectly.", "good", 1000);
+      else if (m.T.backup) { cruiseHit = true; await step("The engine broke — but the backup took over. Testing paid off!", "caution", 1300); }
+      else {
+        cruiseHit = true;
+        await decide("engineer", "Engine trouble!", "The main engine stopped during the burn. There's no backup.", [
+          { label: "Try a restart", hint: `${pct(riskOf(0.4))} chance it fails for good.`, p: riskOf(0.4), good: 1.0, bad: 0.4, ok: "The restart worked!", fail: "The restart failed. You'll arrive on a bad path." },
+          { label: "Limp on with small thrusters", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.8, bad: 0.8, ok: "The small thrusters are slowly doing the job." }
+        ]);
+      }
+      if (!m.P.ion) $("thrust").setAttribute("opacity", "0");
+    };
+    const pool = [
+      async () => { mark("☄️"); if (!unlucky(0.5)) await step("A tiny space rock zips past. Close call, no damage!", "good"); else if (m.T.backup) await step("A tiny space rock cut a cable — the backup line took over.", "caution"); else { cruiseHit = true; bump(0.94); await step("A tiny space rock dented a panel. A little power is lost.", "failure"); } },
+      async () => { mark("🧭"); await decide("engineer", "Slightly off course", "Tracking from Earth shows the path is a little off. Fix it now, or later?", [
+        { label: "Big correction now", hint: "Safe, but burns extra fuel.", p: 0, good: 1, bad: 1, ok: "Back on the perfect path.", fuel: 8 },
+        { label: "Small nudge later", hint: `Saves fuel. ${pct(riskOf(0.2))} chance of a sloppy arrival.`, p: riskOf(0.2), good: 1.03, bad: 0.86, ok: "The small nudge was enough, and you saved fuel.", fail: "The late fix wasn't enough. You'll arrive a bit off target." }
+      ]); },
+      async () => { mark("💾"); await decide("systems", "Software update", "Engineers on Earth wrote smarter software for the spacecraft.", [
+        { label: "Install it", hint: `Better science. ${pct(riskOf(0.15))} chance of a glitch.`, p: riskOf(0.15), good: 1.06, bad: 0.9, ok: "Update installed. The tools are sharper now!", fail: "The update glitched and had to be undone." },
+        { label: "Skip it", hint: "Safe. Nothing changes.", p: 0, good: 1, bad: 1, ok: "You kept the software you trust." }
+      ]); },
+      async () => { mark("🌠"); await decide("scientist", "A comet is passing!", "A comet will fly by soon. Turning to photograph it is a free bonus, but uses battery.", [
+        { label: "Turn and take pictures", hint: `Bonus science. ${pct(riskOf(0.15))} chance of a pointing problem.`, p: riskOf(0.15), good: 1.07, bad: 0.93, ok: "Stunning comet pictures sent home!", fail: "The spacecraft lost its bearings for a day." },
+        { label: "Stay on course", hint: "Safe. No bonus.", p: 0, good: 1, bad: 1, ok: "You stayed focused on the main goal." }
+      ]); },
+      async () => { mark("📡"); await step("Signal lost! Mission Control can't hear the spacecraft…", "caution", 1700);
+        if (m.T.backup || !unlucky(1 - m.C.rel + 0.25)) await step("The signal is back! The antenna had drifted off Earth and fixed itself.", "good");
+        else { cruiseHit = true; bump(0.93); await step("Contact returns after five silent days, but some settings were lost.", "failure"); } },
+      async () => { mark("✨"); bump(1.03); await step("Lucky break: the path lined up perfectly, saving fuel and time.", "good"); },
+      async () => { mark("⚡"); if (m.T.cost) await step("A cosmic ray reset the computer. It restarted cleanly, thanks to testing.", "good");
+        else if (!unlucky(0.5)) await step("A cosmic ray reset the computer. It restarted fine.", "caution");
+        else { cruiseHit = true; bump(0.95); await step("A cosmic ray scrambled some memory. Commands had to be sent again.", "failure"); } },
+      async () => { mark("🔋"); if (m.B.store >= 1) { bump(1.02); await step("Battery check: the large battery is in great shape, with power to spare.", "good"); }
+        else await step("Battery check: the small battery is healthy, but there's little to spare.", "caution"); }
+    ];
+    const n = { cadet: 2, engineer: 3, director: 4, sandbox: 3 }[state.difficulty] || 3;
+    const list = pick(pool, n);
+    list.splice(1, 0, storm);
+    list.splice(Math.min(3, list.length), 0, engineCheck);
+    let day = 0;
+    for (let i = 0; i < list.length; i++) {
+      const to = 0.06 + (0.84 * (i + 1)) / (list.length + 1), dayTo = Math.round(m.days * to);
+      status(i === 0 ? "Cruising through deep space…" : "Still cruising…");
+      await Promise.all([moveCraft(to, 1700), countTo("dDay", day, dayTo, "", 1500)]);
+      day = dayTo;
+      await list[i]();
+    }
+    setPhase("cruise", cruiseHit ? "hit" : "ok");
+
+    // ---- 3. Arrive ----
     setPhase("arrive", "now");
-    await Promise.all([moveCraft(0.94, 1200), countTo("dDay", Math.round(m.days * 0.75), m.days)]);
-    if (breaks(m.p.arrive)) { lost = true; lostAt = "arrival"; log(`Contact was lost while arriving at ${m.d.name}.`, "failure"); setPhase("arrive", "lost"); }
-    else {
-      log(`Arrived at ${m.d.name}${m.s.approach === "orbit" ? " and went into orbit" : ""}! 🎉`, "good");
+    status(`${m.d.name} is getting bigger in the cameras…`);
+    await Promise.all([moveCraft(0.97, 1700), countTo("dDay", day, m.days, "", 1500)]);
+    await step(`Approaching ${m.d.name} after ${tripLabel(m.days)} of travel.`, "info", 1100);
+    const cx = 560, cy = 150;
+    const circle = (turns, r, ms) => { const a0 = Math.atan2(pathPoint(1).y - cy, pathPoint(1).x - cx); return tween(ms, e => { const a = a0 + e * turns * 6.283; placeCraft(cx + Math.cos(a) * r, cy + Math.sin(a) * r, a * 180 / Math.PI + 90); }); };
+    if (breaks(m.p.arrive)) { lost = true; lostAt = "arrival"; await step(`Contact was lost while arriving at ${m.d.name}.`, "failure", 1600); setPhase("arrive", "lost"); }
+    else if (m.flyby) {
+      await moveCraft(1, 600);
+      await step("Closest approach! Every tool is working as fast as it can.", "good", 900);
+      await tween(1500, e => placeCraft(584 + 80 * e, 104 + 41 * e, 27));
+      setPhase("arrive", "ok");
+    } else {
+      await moveCraft(1, 600);
+      if (!m.landing || m.d.dv.landViaOrbit) {
+        $("thrust").setAttribute("opacity", "1");
+        await step("Engine fires to slow down, so gravity can catch the spacecraft…", "info", 900);
+        await burn(m.P.ion ? fuel - 15 : fuel * 0.45);
+        $("orbitRing").setAttribute("opacity", "1");
+        await circle(1.25, 52, 2600);
+        $("thrust").setAttribute("opacity", "0");
+        await step(`In orbit around ${m.d.name}! 🎉`, "good", 1000);
+      }
       if (m.landing) {
-        await sleep(700);
-        if (breaks(m.p.land)) { lost = true; lostAt = "landing"; log(`The ${m.gear.name.toLowerCase()} failed. The lander crashed.`, "failure"); setPhase("arrive", "lost"); }
-        else { log("Touchdown! The lander is safe on the surface.", "good"); setPhase("arrive", "ok"); }
-      } else setPhase("arrive", "ok");
+        if (state.dest !== "asteroid") await decide("director", "Pick a landing site", "Two spots look good from above. One is flat and safe. The other is rougher but far more interesting.", [
+          { label: "The flat, safe plain", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.97, bad: 0.97, ok: "Target locked on the flat plain." },
+          { label: "The interesting rough spot", hint: `Better science. ${pct(riskOf(0.25))} chance of a hard landing.`, p: riskOf(0.25), good: 1.12, bad: 0.7, ok: "Target locked on the exciting site.", fail: "The rough ground damaged a landing leg." }
+        ]);
+        const edl = state.dest === "mars"
+          ? ["Entry! The heat shield glows as Mars' air slows the lander.", "Parachute opens. Speed is dropping fast.", "Landing engines fire for the last few seconds…"]
+          : state.dest === "asteroid" ? ["Drifting down very slowly. Gravity here is tiny.", "The arm reaches out toward the surface…"]
+          : ["Descent engine fires. Falling toward the surface…", "Landing legs unfold.", "Dust kicks up. Almost there…"];
+        $("thrust").setAttribute("opacity", "1");
+        const a0 = Math.atan2(pathPoint(1).y - cy, pathPoint(1).x - cx) + (m.d.dv.landViaOrbit ? 1.25 * 6.283 : 0);
+        const r0 = m.d.dv.landViaOrbit ? 52 : Math.hypot(pathPoint(1).x - cx, pathPoint(1).y - cy), r1 = state.dest === "asteroid" ? 30 : 37;
+        for (let i = 0; i < edl.length; i++) {
+          const f0 = i / edl.length, f1 = (i + 1) / edl.length;
+          status(edl[i]); log(edl[i], "info");
+          await Promise.all([tween(1300, e => { const r = r0 + (r1 - r0) * (f0 + (f1 - f0) * e); placeCraft(cx + Math.cos(a0) * r, cy + Math.sin(a0) * r, a0 * 180 / Math.PI + 180); }), burn(fuel - fuel * 0.3)]);
+        }
+        $("thrust").setAttribute("opacity", "0");
+        if (breaks(m.p.land)) { lost = true; lostAt = "landing"; await step(`The ${m.gear.name.toLowerCase()} failed. The lander crashed.`, "failure", 1600); setPhase("arrive", "lost"); }
+        else await step("Touchdown! The lander is safe on the surface. 🎉", "good", 1300);
+      }
+      if (!lost) setPhase("arrive", "ok");
     }
   }
 
-  // 4. Science
+  // ---- 4. Science ----
   if (!lost) {
     reachedOps = true;
     setPhase("ops", "now");
-    await moveCraft(1, 700);
     let hit = false;
+    await step("Science tools switch on one by one.", "info", 1000);
+    await step("First picture arrives on Earth. The control room cheers! 📸", "good", 1200);
+    await sci(0.2);
     const hz = hazardFor(m);
-    if (hz.info) { mult *= hz.mult; log(hz.info, "good"); }
+    if (hz.info) { bump(hz.mult); await step(hz.info, "good"); }
     else hit = !(await decide(hz.role, hz.title, hz.body, hz.options));
-    await sleep(600);
-    if (!m.powerOK) { log("Not enough power — the tools could only work half the time.", "caution"); hit = true; }
-    if (breaks(m.p.ops)) { mult *= 0.6; hit = true; log(`One of the science tools broke partway through the mission.`, "failure"); }
-    else log(`The ${m.tools.map(t => t.name).join(" and ")} ${m.tools.length > 1 ? "are" : "is"} collecting data.`, "good");
+    await sci(0.45);
+    if (!m.powerOK) { await step("Not enough power — the tools can only work half the time.", "caution"); hit = true; }
+
+    const found = { map: "The cameras spot a strange landform nobody has seen before.", comp: "The tools detect signs of water locked in the ground!", sample: "The sample contains minerals that only form in water!" }[state.objective];
+    const sciPool = [
+      async () => { if (m.planFit >= 0.8) { bump(1.08); await step("Surprise discovery! " + found, "good", 1500); } else await step("The tools aren't a great match for the goal, so discoveries are slow.", "caution"); },
+      async () => { if (m.link < 0.95) await decide("systems", "Memory is full", "The tools made more data than the antenna can send. The memory is full.", [
+          { label: "Delete the oldest pictures", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.97, bad: 0.97, ok: "Old pictures deleted to make room." },
+          { label: "Squeeze the data smaller", hint: `Keep everything. ${pct(riskOf(0.2))} chance some files get scrambled.`, p: riskOf(0.2), good: 1.02, bad: 0.86, ok: "Everything fit after squeezing.", fail: "Some squeezed files came out scrambled." }
+        ]); else { bump(1.02); await step("The antenna is sending data home faster than planned.", "good"); } },
+      async () => { if (m.landing && state.instr.includes("scoop")) await decide("engineer", "The scoop arm is stuck", "A pebble is jammed in the scoop arm.", [
+          { label: "Shake it loose", hint: `${pct(riskOf(0.25))} chance of bending the arm.`, p: riskOf(0.25), good: 1.0, bad: 0.8, ok: "The pebble popped out. Back to digging!", fail: "The arm bent. Scooping is much slower now." },
+          { label: "Work slowly around it", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.95, bad: 0.95, ok: "Slow and steady. Fewer samples, but safe." }
+        ]); else if (!unlucky(0.3)) await step("A tool ran hot, cooled down in the shade, and went back to work.", "good"); else { hit = true; bump(0.95); await step("A tool overheated and lost a few days of work.", "failure"); } },
+      async () => { if (m.landing && m.W.solar && state.dest === "mars") { bump(1.03); await step("A gust of wind blew the dust off the solar panels. Free power!", "good"); }
+        else await step("Students on Earth vote on what the spacecraft should look at next.", "info"); }
+    ];
+    for (const e of pick(sciPool, 2)) await e();
+    await sci(0.75);
+    if (breaks(m.p.ops)) { bump(0.6); hit = true; await step("One of the science tools broke partway through the mission.", "failure"); }
+    else await step(`The ${m.tools.map(t => t.name).join(" and ")} ${m.tools.length > 1 ? "are" : "is"} collecting great data.`, "good");
     if (!m.budgetOK) {
       const over = (m.cost - m.budget) / m.budget;
-      mult *= Math.max(0.3, 1 - over * 2); hit = true;
-      log("The money ran out! The mission had to end early.", "failure");
+      bump(Math.max(0.3, 1 - over * 2)); hit = true;
+      await step("The money ran out! The mission has to end early.", "failure", 1500);
     }
-    // Extend the mission? (Scientist)
     if (!m.flyby && !hit) {
       const yr = m.d.opsYear, wearP = sb ? 0 : clamp(1 - Math.pow(m.p.ops, 1 / Math.max(0.6, m.LF.wear)), 0.03, 0.6);
-      const affordable = m.Df.sandbox || m.cost + yr <= m.budget;
-      const ok = await decide("scientist", "Everything's working!", `The spacecraft is healthy. Keep going for one more year? It costs ${money(yr)}.`, [
-        { label: "Extend one more year", hint: `+15% science, ${pct(wearP)} chance a tool wears out.${affordable ? "" : " You'll go over budget!"}`, p: wearP, good: affordable ? 1.15 : 0.95, bad: 0.85, ok: "One extra year of discoveries!", fail: "A tool wore out during the extra year.", extend: true },
+      const affordable = m.Df.sandbox || m.cost + extraCost + yr <= m.budget;
+      await decide("scientist", "Everything's working!", `The spacecraft is healthy. Keep going for one more year? It costs ${money(yr)}.`, [
+        { label: "Extend one more year", hint: `+15% science, ${pct(wearP)} chance a tool wears out.${affordable ? "" : " You'll go over budget!"}`, p: wearP, good: affordable ? 1.15 : 0.95, bad: 0.85, ok: "One extra year of discoveries!", fail: "A tool wore out during the extra year.", cost: yr },
         { label: "Finish on time", hint: "Safe. Keep your leftover money.", p: 0, good: 1, bad: 1, ok: "Mission completed on schedule." }
       ]);
-      const last = decisions[decisions.length - 1];
-      if (last.label.startsWith("Extend")) extraCost = yr;
     }
+    await sci(1);
     setPhase("ops", hit ? "hit" : "ok");
 
-    // 5. Send home
+    // ---- 5. Send home ----
     setPhase("data", "now");
     let dataHome = m.link;
-    if (breaks(clamp(m.C.rel + m.T.bonus + m.Df.rel, 0, 0.995))) { dataHome *= 0.75; log("The antenna had a glitch. Some data was lost.", "caution"); }
-    await countTo("dData", 0, Math.round(dataHome * 100), "%", 1100);
-    if (dataHome < 0.95) { log(`Only ${pct(dataHome)} of the data made it to Earth.`, "caution"); setPhase("data", "hit"); }
-    else { log("All the data arrived on Earth! 📡", "good"); setPhase("data", "ok"); }
+    await step("Sending the last of the data across space to Earth…", "info", 1000);
+    await countTo("dData", 0, Math.round(dataHome * 50), "%", 1200);
+    if (breaks(clamp(m.C.rel + m.T.bonus + m.Df.rel, 0, 0.995))) { dataHome *= 0.75; await step("The antenna glitched. Some data was lost on the way.", "caution"); }
+    await countTo("dData", Math.round(dataHome * 50), Math.round(dataHome * 100), "%", 1200);
+    if (dataHome < 0.95) { await step(`Only ${pct(dataHome)} of the data made it to Earth.`, "caution"); setPhase("data", "hit"); }
+    else { await step("All the data arrived on Earth! 📡", "good"); setPhase("data", "ok"); }
     mult *= dataHome / m.link;
+    await sci(1);
+    status("Mission complete.");
   }
 
   showResult(score(m, { lost, lostAt, mult, decisions, events, extraCost, reachedOps }));
@@ -1431,7 +1708,7 @@ function analysis(r) {
   add("systems", m.link >= 0.95 ? "good" : "bad", m.link >= 0.95 ? "The antenna sent all the data home." : `The antenna could only send ${pct(m.link)} of the data. Data travels slower from far away.`);
   // Decisions
   r.decisions.forEach(d => add(d.role, d.good ? "good" : "meh",
-    `${d.title} You chose "${d.label}". ${d.good ? "Smart call for this design." : "A different choice was safer or better here."}${d.risky && d.went === "bad" ? " Bad luck this time!" : ""}`));
+    `${d.title} You chose "${d.label}". ${d.good ? "Smart call for this design." : d.risky ? "The risk was too high for this design. Testing, backups and a large battery lower the risk." : "Too careful: this design could have handled the risk, so you gave up some science."}${d.risky && d.went === "bad" ? " Bad luck this time!" : ""}`));
   return A;
 }
 
@@ -1578,7 +1855,7 @@ function buildReport(r) {
   const m = r.m, line = "─".repeat(40);
   const crew = team.size > 1 ? ROLES.map(x => `${x.name}: ${ownerOf(x.id)}`) : ["Solo mission"];
   return [
-    "ORBITAL MISSION CONTROL — MISSION REPORT", "Made by Always A.S.K.", line,
+    "ORBITAL MISSION CONTROL — MISSION REPORT", "Made by Always A.S.K", line,
     `Team:         ${teamLabel()} (${m.Df.name} level)`, ...crew.map(c => "  " + c), "",
     `Destination:  ${m.d.name} — ${m.A.name}`, `Goal:         ${m.O.name}`, `Result:       ${r.outcome}`,
     `Score:        ${r.total}/100   Science: ${r.science}/100`, "",
@@ -1623,7 +1900,13 @@ function render() {
       } catch (e) { $("codeNote").textContent = "That code didn't work. Check you copied all of it."; }
     });
   }
-  if (step === 5 && $("beginBtn")) { craftProgress = 0; moveCraft(0, 1); $("beginBtn").addEventListener("click", runFlight); }
+  if (step === 5 && $("beginBtn")) {
+    craftProgress = 0;
+    $("beginBtn").addEventListener("click", runFlight);
+    const sp = $("speedBtn");
+    sp.textContent = speed === 1 ? "⏩ Speed: normal" : "⏩ Speed: fast";
+    sp.addEventListener("click", () => { speed = speed === 1 ? 3 : 1; sp.textContent = speed === 1 ? "⏩ Speed: normal" : "⏩ Speed: fast"; });
+  }
 }
 
 $("stage").addEventListener("click", e => {

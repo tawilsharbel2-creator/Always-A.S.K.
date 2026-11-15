@@ -445,6 +445,7 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
     </div>
     <div class="top-right">
       <button class="btn ghost small" id="lbBtn" type="button">🏆 Leaderboard</button>
+      <button class="btn ghost small" id="resetBtn" type="button">↺ Start over</button>
       <div class="credit"><span class="dot"></span>Made by <strong>Always A.S.K</strong></div>
     </div>
   </div>
@@ -466,14 +467,6 @@ footer.foot{border-top:3px solid var(--ink);color:#cfc6f5}footer strong{color:#f
         </div>
         <div class="levelline" id="levelLine"></div>
         <div class="metrics" id="metrics"></div>
-        <div class="hud-tools">
-          <div class="hud-actions">
-            <button class="btn ghost" id="saveBtn" type="button">Save</button>
-            <button class="btn ghost" id="loadBtn" type="button">Load</button>
-            <button class="btn ghost" id="resetBtn" type="button" style="grid-column:1/-1">Start over</button>
-          </div>
-          <p class="save-note" id="saveNote">Saves in this browser only.</p>
-        </div>
       </section>
     </aside>
   </div>
@@ -860,7 +853,7 @@ function renderHUD() {
 function renderStepper() {
   $("stepper").innerHTML = STEPS.map((lbl, i) => {
     const n = i + 1, cls = n === step ? "active" : (step <= 5 && n < step) ? "done" : "";
-    return `<li><button type="button" class="${cls}" data-step="${n}" ${flying && n !== step ? "disabled" : ""} ${n === step ? 'aria-current="step"' : ""}>
+    return `<li><button type="button" class="${cls}" data-step="${n}" ${(flying && n !== step) || (n > 1 && n !== step && !(team.size && state.difficulty)) ? "disabled" : ""} ${n === step ? 'aria-current="step"' : ""}>
       <span class="n">${n < step ? "✓" : n}</span><span class="lbl">${lbl}</span></button></li>`;
   }).join("");
 }
@@ -868,6 +861,11 @@ $("stepper").addEventListener("click", e => {
   const b = e.target.closest("button[data-step]");
   if (b && !b.disabled) go(+b.dataset.step);
 });
+function goQ() {
+  render();
+  const y = $("stage").getBoundingClientRect().top + scrollY - 16;
+  if (scrollY > y) window.scrollTo({ top: y, behavior: "auto" });
+}
 function go(n) {
   step = n;
   render();
@@ -976,12 +974,12 @@ function renderWizard(n) {
     </div>
     <div class="qdots">${dots}</div>
     ${handoff(q.role)}
-    ${n === 3 ? `<section class="panel"><div class="sc-row">${rocketPreview()}<div class="sc-mini">${spacecraftSVG()}</div></div>${partChips()}</section>` : ""}
     <section class="panel">${cards}</section>
     <div class="nav">
       ${i > 0 ? `<button class="btn ghost" type="button" data-q="${i - 1}">← Back</button>` : `<button class="btn ghost" type="button" data-nav="${n - 1}">← Back</button>`}
       ${last ? `<button class="btn" type="button" data-nav="${n + 1}" ${ok ? "" : "disabled"}>${nextLabel}</button>` : `<button class="btn" type="button" data-q="${i + 1}" ${ok ? "" : "disabled"}>${nextLabel}</button>`}
-    </div>`;
+    </div>
+    ${n === 3 ? `<section class="panel" style="margin-top:28px"><div class="sc-row">${rocketPreview()}<div class="sc-mini">${spacecraftSVG()}</div></div>${partChips()}</section>` : ""}`;
 }
 
 /* ---------- Spacecraft picture ---------- */
@@ -992,65 +990,94 @@ function partChips() {
   return `<div class="sc-chips">${items.map(([l, o]) => `<span class="sc-chip ${o ? "on" : ""}"><b>${l}</b>${o ? esc(o.name) : "not chosen yet"}</span>`).join("")}</div>`;
 }
 function spacecraftSVG() {
-  const s = state, m = { landing: state.approach === "land" }, cx = 180, by = 70, bw = 64, bh = 60, bx = cx - bw / 2, out = [];
-  // power
+  const s = state, landing = s.approach === "land", cx = 180, bx = 148, by = 70, bw = 64, bh = 60, o = [];
+  const W = "#ffffff", INK = "#0e0a26", GREY = "#aab6c4", DARK = "#55606e";
+  // ---- power ----
   if (s.power === "solar" || s.power === "wings") {
-    const w = s.power === "wings" ? 118 : 62, h = s.power === "wings" ? 40 : 34, y = by + bh / 2 - h / 2;
+    const big = s.power === "wings", w = big ? 118 : 62, h = big ? 42 : 34, y = by + bh / 2 - h / 2, cols = big ? 8 : 4;
     for (const side of [-1, 1]) {
-      const x = side < 0 ? bx - 10 - w : bx + bw + 10;
-      out.push(`<line x1="${side < 0 ? bx : bx + bw}" y1="${by + bh / 2}" x2="${side < 0 ? x + w : x}" y2="${by + bh / 2}" stroke="#ffffff" stroke-width="4"/>`);
-      out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#2f7be0" stroke="#ffffff" stroke-width="2.5"/>`);
-      for (let i = 1; i < (s.power === "wings" ? 6 : 3); i++) out.push(`<line x1="${x + i * w / (s.power === "wings" ? 6 : 3)}" y1="${y}" x2="${x + i * w / (s.power === "wings" ? 6 : 3)}" y2="${y + h}" stroke="#cfe4ff" stroke-width="1.4" opacity=".7"/>`);
-      out.push(`<line x1="${x}" y1="${y + h / 2}" x2="${x + w}" y2="${y + h / 2}" stroke="#cfe4ff" stroke-width="1.4" opacity=".7"/>`);
+      const x = side < 0 ? bx - 14 - w : bx + bw + 14, ax = side < 0 ? bx : bx + bw, px = side < 0 ? x + w : x;
+      o.push(`<path d="M${ax} ${by + bh / 2 - 7} L${px} ${y + 7} M${ax} ${by + bh / 2 + 7} L${px} ${y + h - 7} M${ax} ${by + bh / 2} L${px} ${by + bh / 2}" stroke="${W}" stroke-width="2"/>`);
+      o.push(`<circle cx="${ax + side * 7}" cy="${by + bh / 2}" r="3.2" fill="${GREY}" stroke="${W}"/>`);
+      o.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#143a8c" stroke="${W}" stroke-width="2"/>`);
+      const cw = (w - 6) / cols, ch = (h - 6) / 3;
+      for (let c = 0; c < cols; c++) for (let r = 0; r < 3; r++)
+        o.push(`<rect x="${(x + 3 + c * cw + 0.8).toFixed(1)}" y="${(y + 3 + r * ch + 0.8).toFixed(1)}" width="${(cw - 1.6).toFixed(1)}" height="${(ch - 1.6).toFixed(1)}" fill="${(c + r) % 2 ? "#4a90f0" : "#2f73dc"}"/>`);
+      if (big) o.push(`<rect x="${x + w / 2 - 1.5}" y="${y - 2}" width="3" height="${h + 4}" fill="${W}"/>`);
+      o.push(`<path d="M${x + 5} ${y + 4} h${w * 0.28} l${-w * 0.16} ${h - 8} h${-w * 0.12}z" fill="#fff" opacity=".14"/>`);
     }
   } else if (s.power === "rtg") {
-    for (const [dx, dy] of [[-1, 1], [1, 1]]) {
-      const x1 = dx < 0 ? bx : bx + bw, y1 = by + bh - 8, x2 = x1 + dx * 46, y2 = y1 + dy * 30;
-      out.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="4"/>`);
-      out.push(`<g transform="translate(${x2},${y2}) rotate(${dx * -30})"><rect x="-9" y="-18" width="18" height="36" rx="5" fill="#8a94a3" stroke="#ffffff"/>
-        ${[-12, -4, 4, 12].map(fy => `<line x1="-15" y1="${fy}" x2="15" y2="${fy}" stroke="#ffffff" stroke-width="2.5"/>`).join("")}
-        <circle r="4" fill="#ff9e5e"/></g>`);
+    for (const dx of [-1, 1]) {
+      const x1 = dx < 0 ? bx : bx + bw, y1 = by + bh - 12, x2 = x1 + dx * 50, y2 = y1 + 26;
+      o.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${W}" stroke-width="3"/><line x1="${x1}" y1="${y1 - 14}" x2="${x1 + dx * 30}" y2="${y1 + 12}" stroke="${GREY}" stroke-width="1.5"/>`);
+      o.push(`<g transform="translate(${x2},${y2}) rotate(${dx * -62})">
+        ${[-14, -8, -2, 4, 10].map(f => `<rect x="-16" y="${f}" width="32" height="2.4" fill="${W}"/>`).join("")}
+        <rect x="-8" y="-20" width="16" height="38" rx="4" fill="#6c7684" stroke="${W}" stroke-width="1.5"/>
+        <rect x="-8" y="-20" width="16" height="6" rx="3" fill="${DARK}"/>
+        <circle cy="20" r="6" fill="#ff8a3d" opacity=".5"/><circle cy="19" r="3.4" fill="#ffd27a"/>
+        <text y="2" font-size="7" font-weight="700" text-anchor="middle" fill="#ffd84d" font-family="Space Mono, monospace">☢</text></g>`);
     }
   }
-  // landing gear
-  if (m.landing) {
-    for (const side of [-1, 1]) {
-      const x1 = side < 0 ? bx + 6 : bx + bw - 6, x2 = x1 + side * 30;
-      out.push(`<line x1="${x1}" y1="${by + bh}" x2="${x2}" y2="${by + bh + 44}" stroke="#ffffff" stroke-width="4"/>`);
-      out.push(`<line x1="${x2 - 9}" y1="${by + bh + 45}" x2="${x2 + 9}" y2="${by + bh + 45}" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>`);
-    }
+  // ---- landing legs ----
+  if (landing) for (const side of [-1, 1]) {
+    const x1 = side < 0 ? bx + 6 : bx + bw - 6, x2 = x1 + side * 34, yb = by + bh, yf = yb + 46;
+    o.push(`<line x1="${x1}" y1="${yb}" x2="${x2}" y2="${yf}" stroke="${W}" stroke-width="4" stroke-linecap="round"/>`);
+    o.push(`<line x1="${x1}" y1="${yb}" x2="${x1 + side * 17}" y2="${yb + 23}" stroke="${GREY}" stroke-width="7" stroke-linecap="round"/>`);
+    o.push(`<line x1="${side < 0 ? bx : bx + bw}" y1="${by + bh - 22}" x2="${x1 + side * 22}" y2="${yb + 30}" stroke="${W}" stroke-width="2"/>`);
+    o.push(`<ellipse cx="${x2}" cy="${yf + 2}" rx="12" ry="4" fill="${GREY}" stroke="${W}" stroke-width="1.5"/>`);
   }
-  // engine
+  // ---- engine ----
   const ey = by + bh;
   if (s.prop === "ion") {
-    out.push(`<ellipse cx="${cx}" cy="${ey + 10}" rx="17" ry="8" fill="#26385a" stroke="#9fd8ff"/>`);
-    out.push(`<ellipse cx="${cx}" cy="${ey + 22}" rx="12" ry="14" fill="#6fd0ff" opacity=".45"><animate attributeName="opacity" values=".25;.6;.25" dur="1.6s" repeatCount="indefinite"/></ellipse>`);
+    o.push(`<rect x="${cx - 14}" y="${ey}" width="28" height="8" fill="${DARK}" stroke="${W}"/>`);
+    o.push(`<ellipse cx="${cx}" cy="${ey + 12}" rx="19" ry="7" fill="#1d2b4d" stroke="#9fd8ff" stroke-width="2"/>`);
+    o.push([13, 8, 3].map(r => `<ellipse cx="${cx}" cy="${ey + 12}" rx="${r}" ry="${r * 0.37}" fill="none" stroke="#6fd0ff" stroke-width="1"/>`).join(""));
+    o.push(`<path d="M${cx - 15} ${ey + 16} L${cx} ${ey + 52} L${cx + 15} ${ey + 16}z" fill="#6fd0ff" opacity=".4"><animate attributeName="opacity" values=".2;.55;.2" dur="1.6s" repeatCount="indefinite"/></path>`);
   } else if (s.prop) {
-    const w2 = s.prop === "cryo" ? 30 : 24, h2 = s.prop === "cryo" ? 30 : 24;
-    out.push(`<path d="M${cx - 9} ${ey} L${cx + 9} ${ey} L${cx + w2 / 2} ${ey + h2} L${cx - w2 / 2} ${ey + h2} Z" fill="#aab6c4" stroke="#ffffff"/>`);
-    if (s.prop === "cryo") out.push(`<path d="M${cx - 5} ${ey + 2} h10" stroke="#bfefff" stroke-width="4"/>`);
+    const cryo = s.prop === "cryo", w2 = cryo ? 34 : 26, h2 = cryo ? 30 : 24;
+    o.push(`<rect x="${cx - 11}" y="${ey}" width="22" height="6" fill="${DARK}" stroke="${W}"/>`);
+    o.push(`<path d="M${cx - 8} ${ey + 6} C${cx - 9} ${ey + h2 * 0.5} ${cx - w2 / 2} ${ey + h2 * 0.7} ${cx - w2 / 2} ${ey + h2 + 6} L${cx + w2 / 2} ${ey + h2 + 6} C${cx + w2 / 2} ${ey + h2 * 0.7} ${cx + 9} ${ey + h2 * 0.5} ${cx + 8} ${ey + 6}Z" fill="${GREY}" stroke="${W}" stroke-width="2"/>`);
+    o.push([0.35, 0.6, 0.82].map(f => `<path d="M${cx - 8 - (w2 / 2 - 8) * f} ${ey + 6 + h2 * f} h${16 + (w2 - 16) * f}" stroke="${DARK}" stroke-width="1.2"/>`).join(""));
+    o.push(`<ellipse cx="${cx}" cy="${ey + h2 + 6}" rx="${w2 / 2}" ry="3.5" fill="#2a2f3a" stroke="${W}"/>`);
+    o.push(`<path d="M${cx - 16} ${ey - 2} q-8 6 -4 14 M${cx + 16} ${ey - 2} q8 6 4 14" stroke="${cryo ? "#bfefff" : "#ffb37a"}" stroke-width="2" fill="none"/>`);
+    if (cryo) o.push(`<rect x="${cx - 12}" y="${ey + 1}" width="24" height="3" fill="#bfefff"/><circle cx="${cx - 22}" cy="${ey + 6}" r="1.5" fill="#fff"/><circle cx="${cx + 23}" cy="${ey + 10}" r="1.2" fill="#fff"/>`);
   }
-  // body
-  out.push(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="7" fill="url(#foil)" stroke="#f6d77a" stroke-width="2.5"/>`);
-  if (s.battery === "large") out.push(`<rect x="${bx + 10}" y="${by + 36}" width="20" height="12" rx="2" fill="#1d4a44" stroke="#6ce8bc"/><rect x="${bx + 30}" y="${by + 39}" width="3" height="6" fill="#6ce8bc"/><rect x="${bx + 12}" y="${by + 38}" width="14" height="8" fill="#6ce8bc"/>`);
-  if (s.test === "extensive") out.push(`<text x="${bx + bw - 8}" y="${by + 16}" font-size="12" text-anchor="end" fill="#13263d" font-weight="700">2×</text>`);
-  // antenna
+  // ---- body ----
+  o.push(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="7" fill="url(#foil)" stroke="#fff3c4" stroke-width="2"/>`);
+  o.push(`<path d="M${bx + 4} ${by + 18} l14 -12 M${bx + 20} ${by + 30} l22 -20 M${bx + 8} ${by + 52} l18 -14 M${bx + 38} ${by + 54} l20 -18 M${bx + 44} ${by + 22} l14 -10" stroke="#fff6cf" stroke-width="1" opacity=".55"/>`);
+  o.push(`<path d="M${bx} ${by + 20} h${bw} M${bx} ${by + 40} h${bw} M${bx + 32} ${by} v${bh}" stroke="#8a5f17" stroke-width="1" opacity=".6"/>`);
+  o.push([[4, 4], [bw - 4, 4], [4, bh - 4], [bw - 4, bh - 4]].map(([a, b]) => `<circle cx="${bx + a}" cy="${by + b}" r="1.4" fill="#7a5412"/>`).join(""));
+  o.push(`<rect x="${bx + 37}" y="${by + 24}" width="20" height="12" rx="2" fill="#c98f24" stroke="#7a5412"/><path d="M${bx + 40} ${by + 27} h14 M${bx + 40} ${by + 30} h14 M${bx + 40} ${by + 33} h14" stroke="#7a5412" stroke-width="1"/>`);
+  o.push([[-1, 0], [bw + 1, 0], [-1, bh], [bw + 1, bh]].map(([a, b]) => `<path d="M${bx + a} ${by + b} l${a < 0 ? -6 : 6} ${b ? 5 : -5} l${a < 0 ? 1 : -1} ${b ? -8 : 8}z" fill="${GREY}" stroke="${W}" stroke-width=".8"/>`).join(""));
+  o.push(`<rect x="${bx + 6}" y="${by - 7}" width="8" height="8" rx="1.5" fill="${INK}" stroke="${W}"/><circle cx="${bx + 10}" cy="${by - 3}" r="2" fill="#5fe0f5"/>`);
+  if (s.battery) {
+    const n = s.battery === "large" ? 3 : 1;
+    o.push(`<rect x="${bx + 6}" y="${by + 44}" width="${n * 8 + 4}" height="11" rx="2" fill="#12352f" stroke="#6ce8bc"/>` +
+      Array.from({ length: n }, (_, i) => `<rect x="${bx + 8 + i * 8}" y="${by + 46}" width="6" height="7" fill="#6ce8bc"/>`).join("") +
+      `<rect x="${bx + 10 + n * 8}" y="${by + 47.5}" width="2.5" height="4" fill="#6ce8bc"/>`);
+  }
+  if (s.test === "standard") o.push(`<circle cx="${bx + 14}" cy="${by + 30}" r="7" fill="#12352f" stroke="#6ce8bc" stroke-width="1.5"/><path d="M${bx + 10.5} ${by + 30} l2.5 3 l5 -6" stroke="#6ce8bc" stroke-width="2" fill="none"/>`);
+  if (s.test === "extensive") o.push(`<rect x="${bx + 5}" y="${by + 23}" width="12" height="12" rx="2" fill="#c98f24" stroke="#7a5412"/><rect x="${bx + 9}" y="${by + 27}" width="12" height="12" rx="2" fill="#e8b84a" stroke="#7a5412"/><text x="${bx + 15}" y="${by + 36.5}" font-size="8" font-weight="700" text-anchor="middle" fill="${INK}" font-family="Space Mono, monospace">2×</text>`);
+  // ---- antenna ----
   const ay = by;
-  if (s.comms === "lowGain") out.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 30}" stroke="#ffffff" stroke-width="4"/><circle cx="${cx}" cy="${ay - 32}" r="4" fill="#ffffff"/>`);
+  if (s.comms === "lowGain") o.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 30}" stroke="${W}" stroke-width="3"/><path d="M${cx - 7} ${ay - 30} h14 l-4 -9 h-6z" fill="${GREY}" stroke="${W}"/><circle cx="${cx}" cy="${ay - 42}" r="2.5" fill="#ff6b4a"/><path d="M${cx - 6} ${ay - 12} h12" stroke="${GREY}" stroke-width="2"/>`);
   else if (s.comms) {
-    const r = s.comms === "bigDish" ? 40 : 24;
-    out.push(`<line x1="${cx}" y1="${ay}" x2="${cx}" y2="${ay - 10}" stroke="#ffffff" stroke-width="4"/>`);
-    out.push(`<path d="M${cx - r} ${ay - 10 - r * 0.55} Q${cx} ${ay - 2} ${cx + r} ${ay - 10 - r * 0.55} Z" fill="#e8edf3" stroke="#ffffff"/>`);
-    out.push(`<line x1="${cx}" y1="${ay - 10}" x2="${cx}" y2="${ay - 18 - r * 0.6}" stroke="#ffffff" stroke-width="2.5"/>`);
+    const r = s.comms === "bigDish" ? 40 : 25, dy = ay - 10, top = dy - r * 0.55;
+    o.push(`<path d="M${cx - 6} ${ay} L${cx - 3} ${dy} h6 L${cx + 6} ${ay}z" fill="${GREY}" stroke="${W}"/>`);
+    o.push(`<path d="M${cx - r} ${top} Q${cx} ${dy + 10} ${cx + r} ${top} Z" fill="#eef2f7" stroke="${W}" stroke-width="2"/>`);
+    o.push([-0.66, -0.33, 0.33, 0.66].map(f => `<path d="M${cx} ${dy + 3} L${cx + r * f} ${top}" stroke="#a9b6c6" stroke-width="1"/>`).join(""));
+    o.push(`<ellipse cx="${cx}" cy="${top}" rx="${r}" ry="${r * 0.13}" fill="#cfd8e3" stroke="${W}" stroke-width="1.5"/>`);
+    o.push(`<path d="M${cx - r * 0.6} ${top} L${cx} ${top - r * 0.55} L${cx + r * 0.6} ${top} M${cx} ${top} V${top - r * 0.55}" stroke="${W}" stroke-width="1.4" fill="none"/><rect x="${cx - 3}" y="${top - r * 0.55 - 5}" width="6" height="6" rx="1" fill="#ff6b4a" stroke="${W}"/>`);
+    if (s.comms === "bigDish") o.push([10, 17].map(q => `<path d="M${cx - q} ${top - r * 0.55 - 8 - q * 0.3} q${q} ${-q * 0.6} ${q * 2} 0" stroke="#ffd84d" stroke-width="1.6" fill="none"/>`).join(""));
   }
-  // instruments
-  if (s.instr.includes("camera")) out.push(`<rect x="${bx + bw - 4}" y="${by + 6}" width="16" height="14" rx="3" fill="#2b2f3a" stroke="#ffffff"/><circle cx="${bx + bw + 14}" cy="${by + 13}" r="5" fill="#5fe0f5" stroke="#ffffff"/>`);
-  if (s.instr.includes("spectro")) out.push(`<rect x="${bx - 16}" y="${by + 4}" width="18" height="18" rx="3" fill="#3b2f5e" stroke="#b9a2ff"/><circle cx="${bx - 7}" cy="${by + 13}" r="4" fill="#b9a2ff"/>`);
-  if (s.instr.includes("scoop")) out.push(`<path d="M${bx + bw} ${by + bh - 10} l22 14 l10 18" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/><path d="M${bx + bw + 26} ${by + bh + 22} q6 10 14 2" fill="#ffc864" stroke="#ffffff"/>`);
+  // ---- science tools ----
+  if (s.instr.includes("camera")) o.push(`<path d="M${bx + bw} ${by + 12} h8" stroke="${W}" stroke-width="3"/><rect x="${bx + bw + 7}" y="${by + 4}" width="15" height="16" rx="3" fill="#2b2f3a" stroke="${W}" stroke-width="1.5"/><rect x="${bx + bw + 22}" y="${by + 6}" width="9" height="12" fill="${DARK}" stroke="${W}"/><path d="M${bx + bw + 31} ${by + 4} l6 -3 v22 l-6 -3z" fill="#2b2f3a" stroke="${W}"/><circle cx="${bx + bw + 31}" cy="${by + 12}" r="4.2" fill="#5fe0f5" stroke="${W}"/><circle cx="${bx + bw + 29.5}" cy="${by + 10.5}" r="1.3" fill="#fff"/><circle cx="${bx + bw + 11}" cy="${by + 8}" r="1.3" fill="#ff6b4a"/>`);
+  if (s.instr.includes("spectro")) o.push(`<path d="M${bx} ${by + 12} h-6" stroke="${W}" stroke-width="3"/><rect x="${bx - 24}" y="${by + 2}" width="19" height="20" rx="3" fill="#3b2f5e" stroke="#d6c8ff" stroke-width="1.5"/><circle cx="${bx - 14.5}" cy="${by + 10}" r="5" fill="#b9a2ff" stroke="${W}"/><circle cx="${bx - 14.5}" cy="${by + 10}" r="2" fill="#3b2f5e"/><path d="M${bx - 21} ${by + 18} h13" stroke="#d6c8ff" stroke-width="1.5"/><path d="M${bx - 24} ${by + 6} L${bx - 52} ${by - 12}" stroke="${W}" stroke-width="1.6"/><circle cx="${bx - 54}" cy="${by - 13}" r="3.5" fill="#b9a2ff" stroke="${W}"/>`);
+  if (s.instr.includes("scoop")) o.push(`<path d="M${bx + bw} ${by + bh - 12} l20 12 l12 20" fill="none" stroke="${W}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${bx + bw + 20}" cy="${by + bh}" r="3.5" fill="${GREY}" stroke="${W}"/><circle cx="${bx + bw + 1}" cy="${by + bh - 12}" r="3.5" fill="${GREY}" stroke="${W}"/><path d="M${bx + bw + 24} ${by + bh + 20} q8 14 18 2 l-3 -4 q-6 6 -11 -1z" fill="#ffc864" stroke="${W}" stroke-width="1.5"/><circle cx="${bx + bw + 33}" cy="${by + bh + 23}" r="2.2" fill="#9a6b3a"/>`);
 
-  return `<svg class="sc-svg" viewBox="10 14 340 172" role="img" aria-label="Picture of your spacecraft">
-    <defs><linearGradient id="foil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#e0a93a"/><stop offset="1" stop-color="#b9822a"/></linearGradient></defs>
-    ${out.join("")}</svg>`;
+  return `<svg class="sc-svg" viewBox="10 0 340 190" role="img" aria-label="Picture of your spacecraft">
+    <defs><linearGradient id="foil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset=".45" stop-color="#e8b040"/><stop offset="1" stop-color="#b47c22"/></linearGradient></defs>
+    ${o.join("")}</svg>`;
 }
 
 /* ---------- Step 4: Check ---------- */
@@ -1166,7 +1193,7 @@ function destArt(m) {
   let extra = "";
   if (k === "moon") extra = `<circle cx="${cx - 12}" cy="${cy - 10}" r="6" fill="#98a1ae"/><circle cx="${cx + 10}" cy="${cy + 6}" r="9" fill="#98a1ae"/><circle cx="${cx + 14}" cy="${cy - 16}" r="4" fill="#a3acb8"/><circle cx="${cx - 8}" cy="${cy + 16}" r="5" fill="#a3acb8"/>`;
   if (k === "mars") extra = `<ellipse cx="${cx}" cy="${cy - 30}" rx="13" ry="5" fill="#fff"/><circle cx="${cx + 10}" cy="${cy + 4}" r="8" fill="#b04a2c"/><circle cx="${cx - 14}" cy="${cy + 12}" r="5" fill="#b9512f"/><path d="M${cx - 26} ${cy - 6} q20 8 44 -4" stroke="#b04a2c" stroke-width="3" fill="none"/>`;
-  if (k === "europa") extra = `<g stroke="#b4553a" stroke-width="1.6" fill="none"><path d="M${cx - 30} ${cy - 10} q30 14 60 -6"/><path d="M${cx - 26} ${cy + 14} q24 -20 54 -2"/><path d="M${cx - 10} ${cy - 32} q8 30 -6 62"/><path d="M${cx + 12} ${cy - 30} q-10 28 6 60"/></g>`;
+  if (k === "europa") extra = `<g stroke="#b4553a" stroke-width="3" fill="none" transform="rotate(25 ${cx} ${cy})">${[-30, -18, -6, 6, 18, 30].map(d => `<line x1="${cx + d}" y1="${cy - 40}" x2="${cx + d}" y2="${cy + 40}"/>`).join("")}</g><g stroke="#b4553a" stroke-width="1.2" opacity=".55" fill="none" transform="rotate(-50 ${cx} ${cy})">${[-20, 2, 24].map(d => `<line x1="${cx + d}" y1="${cy - 40}" x2="${cx + d}" y2="${cy + 40}"/>`).join("")}</g>`;
   return `<g id="destG"><circle cx="${cx}" cy="${cy}" r="34" fill="${base}" stroke="#fff" stroke-width="2"/><clipPath id="dclip"><circle cx="${cx}" cy="${cy}" r="33"/></clipPath><g clip-path="url(#dclip)">${extra}<circle cx="${cx + 18}" cy="${cy + 14}" r="40" fill="#000" opacity=".18"/></g></g>`;
 }
 function renderLaunch() {
@@ -1330,33 +1357,33 @@ function ask(roleId, title, body, options) {
 const ev = o => (1 - o.p) * o.good + o.p * o.bad;  // expected science multiplier
 
 function hazardFor(m) {
-  const risk = x => clamp(x * m.T.riskMult * m.Df.risk, 0, 0.95);
+  const risk = x => m.Df.sandbox ? 0 : clamp(x * m.T.riskMult * m.Df.risk, 0, 0.95);
   const batt = m.B.store >= 1 ? 0.4 : 1;
   const k = state.dest, land = m.landing;
   if (k === "moon" && land) {
     if (!m.W.solar) return { info: "Night falls for about 14 Earth days. Your nuclear generators keep everything running!", mult: 1.05 };
     return { role: "systems", title: "Lunar night is coming", body: "Night here lasts about 14 Earth days. No sunlight means no solar power, and it drops to about −170 °C.",
       options: [
-        { label: "Go to sleep", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.92, bad: 0.92, ok: "The lander slept and woke at sunrise." },
-        { label: "Keep working on battery", hint: `${pct(risk(0.5 * batt))} chance the cold breaks something.${m.B.store >= 1 ? " Your large battery helps!" : ""}`, p: risk(0.5 * batt), good: 1.0, bad: 0.6, ok: "The battery lasted all night!", fail: "The battery ran out and some parts froze.", drain: true }
+        { label: "Go to sleep", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "The lander slept and woke at sunrise." },
+        { label: "Keep working on battery", hint: `${pct(risk(0.5 * batt))} chance the cold breaks something.${m.B.store >= 1 ? " Your large battery helps!" : ""}`, p: risk(0.5 * batt), good: 1.06, bad: 0.6, ok: "The battery lasted all night!", fail: "The battery ran out and some parts froze.", drain: true }
       ] };
   }
   if (k === "mars" && land) {
     if (!m.W.solar) return { info: "A huge dust storm hits. Nuclear power doesn't need sunlight, so you keep working!", mult: 1.05 };
     return { role: "systems", title: "Dust storm!", body: "A dust storm is blocking the Sun. In 2018 a storm like this ended the solar-powered Opportunity rover.",
       options: [
-        { label: "Power down and wait", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.9, bad: 0.9, ok: "The lander waited out the storm." },
+        { label: "Power down and wait", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "The lander waited out the storm." },
         { label: "Keep working", hint: `${pct(risk(0.45 * batt))} chance the power runs out.${m.B.store >= 1 ? " Your large battery helps!" : ""}`, p: risk(0.45 * batt), good: 1.1, bad: 0.5, ok: "You studied the storm up close — amazing data!", fail: "The power ran out. Some systems never came back.", drain: true }
       ] };
   }
   if (k === "asteroid" && land) return { role: "director", title: "Boulders everywhere!", body: "The best spot to touch down is covered in boulders.",
     options: [
       { label: "Touch down there anyway", hint: `Better science, ${pct(risk(0.35))} chance of damage.`, p: risk(0.35), good: 1.15, bad: 0.6, ok: "Perfect touchdown between the boulders!", fail: "A boulder hit the spacecraft. Some tools broke." },
-      { label: "Pick a safer spot", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.94, bad: 0.94, ok: "Touched down safely on a smooth spot." }
+      { label: "Pick a safer spot", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Touched down safely on a smooth spot." }
     ] };
   if (k === "europa") return { role: "scientist", title: "Dangerous radiation", body: "Jupiter blasts the area around Europa with radiation that can damage electronics.",
     options: [
-      { label: land ? "Shield the tools" : "Stay farther away", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.92, bad: 0.92, ok: "Played it safe and stayed healthy." },
+      { label: land ? "Shield the tools" : "Stay farther away", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Played it safe and stayed healthy." },
       { label: land ? "Keep all tools out" : "Fly in close", hint: `Better science, ${pct(risk(0.35))} chance of damage.`, p: risk(0.35), good: 1.2, bad: 0.55, ok: "Incredible close-up data of the icy surface!", fail: "Radiation damaged the electronics." }
     ] };
   const flavor = {
@@ -1367,7 +1394,7 @@ function hazardFor(m) {
   return { role: "director", title: flavor[0], body: flavor[1] + " How close should you go?",
     options: [
       { label: "Go in close", hint: `Better science, ${pct(risk(0.3))} chance of trouble.`, p: risk(0.3), good: 1.15, bad: 0.65, ok: "Super-sharp close-ups!", fail: "Got too close and damaged a tool." },
-      { label: "Stay at a safe height", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.95, bad: 0.95, ok: "Steady and safe." }
+      { label: "Stay at a safe height", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Steady and safe." }
     ] };
 }
 
@@ -1377,15 +1404,16 @@ async function runFlight() {
   renderStepper();
   const m = compute(state);
   const sb = m.Df.sandbox;
-  const riskOf = x => clamp(x * m.T.riskMult * m.Df.risk, 0, 0.95);
+  const riskOf = x => sb ? 0 : clamp(x * m.T.riskMult * m.Df.risk, 0, 0.95);
   const breaks = p => sb ? false : !roll(p);       // sandbox: nothing breaks by chance
   const unlucky = p => !sb && roll(clamp(p * m.Df.risk, 0, 0.95));
   let mult = 1, lost = false, lostAt = "", extraCost = 0, battery = 100, reachedOps = false, fuel = 100, sciNow = 0;
   const events = [], decisions = [];
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   const status = t => set("fStatus", t);
-  const health = () => set("dHealth", Math.round(clamp(mult, 0, 1.5) * 100) + "%");
-  const bump = x => { mult *= x; health(); };
+  let hp = 1;
+  const health = () => set("dHealth", Math.round(clamp(hp, 0, 1) * 100) + "%");
+  const bump = x => { mult *= x; if (x < 1) hp *= x; health(); };
   const log = (text, kind = "info") => {
     const li = document.createElement("li");
     li.className = kind; li.textContent = text;
@@ -1399,15 +1427,13 @@ async function runFlight() {
     status("Waiting for a decision: " + title);
     const c = await ask(roleId, title, body, options);
     const bad = c.p > 0 && roll(c.p);
-    const best = Math.max(...options.map(ev));
-    const smart = ev(c) >= best - 0.03;
-    decisions.push({ role: roleId, title, label: c.label, good: smart, risky: c.p > 0, went: bad ? "bad" : "ok" });
-    // The right call never costs science: a smart safe choice is free. Playing it safe when the risk was small still costs a little.
-    bump(bad ? c.bad : (smart && c.p === 0 ? Math.max(c.good, 1) : c.good));
+    // Fair and simple: a safe choice never costs anything. A gamble adds science when it works and hurts when it fails.
+    decisions.push({ role: roleId, title, label: c.label, good: !bad, risky: c.p > 0, went: bad ? "bad" : "ok" });
+    bump(bad ? c.bad : c.good);
     if (c.cost) extraCost += c.cost;
     if (c.fuel) await burn(fuel - c.fuel);
     if (c.drain) { battery = bad ? 0 : Math.round(100 - 35 / m.B.store); set("dBat", battery + "%"); }
-    const verdict = smart ? (bad ? " Smart call, just bad luck." : " 🧠 Smart call!") : (c.p > 0 ? (bad ? " The risk was too high for this design." : " You got lucky — the risk was too high for this design.") : " Too careful — your design could have handled the risk.");
+    const verdict = c.p > 0 ? (bad ? " The gamble failed." : " 🎲 The gamble paid off!") : "";
     const text = `${title} — ${c.label}. ${bad ? c.fail : c.ok}${verdict}`;
     status(bad ? c.fail : c.ok);
     log(text, bad ? "failure" : c.p > 0 ? "good" : "caution");
@@ -1426,7 +1452,7 @@ async function runFlight() {
   if (roll(0.4)) {
     await decide("director", "Windy at the launch pad", "Strong winds are blowing across the pad. Launch now, or wait a day?", [
       { label: "Wait for calm weather", hint: "Safe. Costs 5 MC for the extra day.", p: 0, good: 1, bad: 1, ok: "The wind dropped overnight. Perfect launch weather.", cost: 5 },
-      { label: "Launch anyway", hint: `${pct(riskOf(0.22))} chance the rocket gets shaken hard.`, p: riskOf(0.22), good: 1, bad: 0.88, ok: "The rocket punched through the wind without trouble.", fail: "The wind shook the rocket and loosened a part." }
+      { label: "Launch anyway", hint: `${pct(riskOf(0.22))} chance the rocket gets shaken hard.`, p: riskOf(0.22), good: 1.06, bad: 0.88, ok: "The rocket punched through the wind without trouble.", fail: "The wind shook the rocket and loosened a part." }
     ]);
   } else await step("Weather check: clear skies and light wind. Go for launch!", "good", 1000);
 
@@ -1461,7 +1487,11 @@ async function runFlight() {
     await climb(12, 70, 2400);
     status("Stage separation: the empty booster drops away.");
     log("Stage separation. The empty booster drops away.", "info");
+    $("fire").setAttribute("opacity", "0");
     await tween(1200, e => { $("booster").setAttribute("transform", `translate(${-18 * e},${120 * e}) rotate(${-25 * e} 320 200)`); $("booster").setAttribute("opacity", 1 - e); });
+    $("fire").setAttribute("transform", "translate(320 170) scale(.8) translate(-320 -238)");
+    $("fire").querySelectorAll("path:not(:first-child)").forEach(x => x.remove());
+    $("fire").setAttribute("opacity", "1");
     if (!launchOK && failAt === 1) await failLaunch("The second stage engine didn't light. The spacecraft fell back to Earth.");
   }
   if (!lost) {
@@ -1494,8 +1524,8 @@ async function runFlight() {
 
     let cruiseHit = false;
     const storm = () => decide("systems", "Solar storm!", "The Sun just blasted out a burst of radiation. It will hit the spacecraft soon.", [
-      { label: "Power down extra systems", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.98, bad: 0.98, ok: "Powering down protected the electronics." },
-      { label: "Keep everything on", hint: `${pct(riskOf(0.25))} chance of damage.`, p: riskOf(0.25), good: 1.0, bad: 0.8, ok: "The spacecraft got through the storm fine.", fail: "The radiation glitched the computer." }
+      { label: "Power down extra systems", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Powering down protected the electronics." },
+      { label: "Keep everything on", hint: `${pct(riskOf(0.25))} chance of damage.`, p: riskOf(0.25), good: 1.06, bad: 0.8, ok: "The spacecraft got through the storm fine.", fail: "The radiation glitched the computer." }
     ]);
     const engineCheck = async () => {
       $("thrust").setAttribute("opacity", "1");
@@ -1506,8 +1536,8 @@ async function runFlight() {
       else {
         cruiseHit = true;
         await decide("engineer", "Engine trouble!", "The main engine stopped during the burn. There's no backup.", [
-          { label: "Try a restart", hint: `${pct(riskOf(0.4))} chance it fails for good.`, p: riskOf(0.4), good: 1.0, bad: 0.4, ok: "The restart worked!", fail: "The restart failed. You'll arrive on a bad path." },
-          { label: "Limp on with small thrusters", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.8, bad: 0.8, ok: "The small thrusters are slowly doing the job." }
+          { label: "Try a restart", hint: `${pct(riskOf(0.4))} chance it fails for good.`, p: riskOf(0.4), good: 1.06, bad: 0.4, ok: "The restart worked!", fail: "The restart failed. You'll arrive on a bad path." },
+          { label: "Limp on with small thrusters", hint: "No gamble, but you arrive on a worse path.", p: 0, good: 0.85, bad: 0.85, ok: "The small thrusters are slowly doing the job." }
         ]);
       }
       if (!m.P.ion) $("thrust").setAttribute("opacity", "0");
@@ -1573,10 +1603,11 @@ async function runFlight() {
         await circle(1.25, 52, 2600);
         $("thrust").setAttribute("opacity", "0");
         await step(`In orbit around ${m.d.name}! 🎉`, "good", 1000);
+        if (state.dest === "europa") await step("Real: Europa Clipper orbits Jupiter and swoops past Europa about 50 times, to spend less time in the radiation.", "info", 1500);
       }
       if (m.landing) {
         if (state.dest !== "asteroid") await decide("director", "Pick a landing site", "Two spots look good from above. One is flat and safe. The other is rougher but far more interesting.", [
-          { label: "The flat, safe plain", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.97, bad: 0.97, ok: "Target locked on the flat plain." },
+          { label: "The flat, safe plain", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Target locked on the flat plain." },
           { label: "The interesting rough spot", hint: `Better science. ${pct(riskOf(0.25))} chance of a hard landing.`, p: riskOf(0.25), good: 1.12, bad: 0.7, ok: "Target locked on the exciting site.", fail: "The rough ground damaged a landing leg." }
         ]);
         const edl = state.dest === "mars"
@@ -1617,12 +1648,12 @@ async function runFlight() {
     const sciPool = [
       async () => { if (m.planFit >= 0.8) { bump(1.08); await step("Surprise discovery! " + found, "good", 1500); } else await step("The tools aren't a great match for the goal, so discoveries are slow.", "caution"); },
       async () => { if (m.link < 0.95) await decide("systems", "Memory is full", "The tools made more data than the antenna can send. The memory is full.", [
-          { label: "Delete the oldest pictures", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.97, bad: 0.97, ok: "Old pictures deleted to make room." },
+          { label: "Delete the oldest pictures", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Old pictures deleted to make room." },
           { label: "Squeeze the data smaller", hint: `Keep everything. ${pct(riskOf(0.2))} chance some files get scrambled.`, p: riskOf(0.2), good: 1.02, bad: 0.86, ok: "Everything fit after squeezing.", fail: "Some squeezed files came out scrambled." }
         ]); else { bump(1.02); await step("The antenna is sending data home faster than planned.", "good"); } },
       async () => { if (m.landing && state.instr.includes("scoop")) await decide("engineer", "The scoop arm is stuck", "A pebble is jammed in the scoop arm.", [
-          { label: "Shake it loose", hint: `${pct(riskOf(0.25))} chance of bending the arm.`, p: riskOf(0.25), good: 1.0, bad: 0.8, ok: "The pebble popped out. Back to digging!", fail: "The arm bent. Scooping is much slower now." },
-          { label: "Work slowly around it", hint: "Safe. The smart pick when the risk is high.", p: 0, good: 0.95, bad: 0.95, ok: "Slow and steady. Fewer samples, but safe." }
+          { label: "Shake it loose", hint: `${pct(riskOf(0.25))} chance of bending the arm.`, p: riskOf(0.25), good: 1.06, bad: 0.8, ok: "The pebble popped out. Back to digging!", fail: "The arm bent. Scooping is much slower now." },
+          { label: "Work slowly around it", hint: "Safe. Nothing lost, nothing gained.", p: 0, good: 1, bad: 1, ok: "Slow and steady. Fewer samples, but safe." }
         ]); else if (!unlucky(0.3)) await step("A tool ran hot, cooled down in the shade, and went back to work.", "good"); else { hit = true; bump(0.95); await step("A tool overheated and lost a few days of work.", "failure"); } },
       async () => { if (m.landing && m.W.solar && state.dest === "mars") { bump(1.03); await step("A gust of wind blew the dust off the solar panels. Free power!", "good"); }
         else await step("Students on Earth vote on what the spacecraft should look at next.", "info"); }
@@ -1670,14 +1701,15 @@ async function runFlight() {
 function score(m, f) {
   const science = f.lost ? 0 : clamp(Math.round(m.sci * f.mult), 0, 100);
   const spent = m.cost + f.extraCost;
-  const objectiveMet = !f.lost && m.planFit >= 0.8 && science >= 20;
+  const objectiveMet = !f.lost && m.planFit >= 0.8 && science >= m.d.baseSci * m.O.weight * 0.4;
   const pts = {};
-  pts.science = Math.round(science * 0.6);
+  const target = m.d.baseSci * m.O.weight;   // what a well-matched, standard mission earns at this destination
+  pts.science = Math.round(60 * clamp(science / target, 0, 1));
   pts.goal = objectiveMet ? 15 : 0;
   if (m.Df.sandbox) pts.money = 0;
   else {
     const left = m.budget - spent;
-    pts.money = Math.round(left >= 0 ? Math.min(15, (left / m.budget) * 50) : Math.max(-20, (left / m.budget) * 100));
+    pts.money = Math.round(left >= 0 ? Math.min(10, (left / m.budget) * 40) : Math.max(-20, (left / m.budget) * 100));
   }
   pts.decisions = f.decisions.length ? Math.round(10 * f.decisions.filter(d => d.good).length / f.decisions.length) : 10;
   pts.team = m.overLimit + m.warnings === 0 ? 5 : 0;
@@ -1708,7 +1740,7 @@ function analysis(r) {
   add("systems", m.link >= 0.95 ? "good" : "bad", m.link >= 0.95 ? "The antenna sent all the data home." : `The antenna could only send ${pct(m.link)} of the data. Data travels slower from far away.`);
   // Decisions
   r.decisions.forEach(d => add(d.role, d.good ? "good" : "meh",
-    `${d.title} You chose "${d.label}". ${d.good ? "Smart call for this design." : d.risky ? "The risk was too high for this design. Testing, backups and a large battery lower the risk." : "Too careful: this design could have handled the risk, so you gave up some science."}${d.risky && d.went === "bad" ? " Bad luck this time!" : ""}`));
+    `${d.title} You chose "${d.label}". ${!d.risky ? "A safe choice: nothing lost." : d.good ? "The gamble paid off and added science." : "The gamble failed. More testing, backups and a large battery make gambles safer."}`));
   return A;
 }
 
@@ -1760,7 +1792,7 @@ function leaderboardPanel() {
   const rows = (lbFilter === "this" && canFilter ? src.filter(e => e.dest === state.dest && e.objective === state.objective) : src).slice(0, 15);
   let msg = "";
   if (lbScope === "global" && globalState === "loading") msg = "Loading the global leaderboard…";
-  else if (lbScope === "global" && globalState === "off") msg = "The global leaderboard isn't reachable right now, so these are the scores from this device. Open the game from its shared link while signed in to see everyone's.";
+  else if (globalState === "off") msg = "Scores here are saved on this device only.";
   else if (useGlobal && globalWriteFailed) msg = "Your score was saved on this device, but you don't have permission to post to the global leaderboard.";
   const body = rows.length ? rows.map((e, i) => `<tr class="${e.id === lastEntryId ? "me" : ""}">
       <td class="rank">${i + 1}</td>
@@ -1773,8 +1805,8 @@ function leaderboardPanel() {
   return `<section class="panel" id="lbPanel">
     <div class="panel-head"><h3>🏆 Leaderboard</h3>
       <div class="lb-tools">
-        <button class="pill ${lbScope === "global" ? "sel" : ""}" type="button" data-lbscope="global">🌍 Global</button>
-        <button class="pill ${lbScope === "device" ? "sel" : ""}" type="button" data-lbscope="device">This device</button>
+        ${globalState === "off" ? `<span class="pill sel">This device</span>` : `<button class="pill ${lbScope === "global" ? "sel" : ""}" type="button" data-lbscope="global">🌍 Global</button>
+        <button class="pill ${lbScope === "device" ? "sel" : ""}" type="button" data-lbscope="device">This device</button>`}
       </div></div>
     <div class="lb-tools" style="margin:10px 0 16px">
       ${canFilter ? `<button class="pill ${lbFilter === "this" ? "sel" : ""}" type="button" data-lb="this">This mission</button>` : ""}
@@ -1801,7 +1833,7 @@ function showResult(r) {
     : "You made it, but a lot went wrong. The analysis shows what to change.";
   const bd = [
     ["🔬 Science", r.pts.science, "60"], ["🎯 Goal reached", r.pts.goal, "15"],
-    ["💰 Money left", r.pts.money, "15"], ["🧠 Smart decisions", r.pts.decisions, "10"],
+    ["💰 Money left", r.pts.money, "10"], ["🎲 Decisions that worked out", r.pts.decisions, "10"],
     [team.size > 1 ? "🤝 Teamwork bonus (all green)" : "✅ All-green bonus", r.pts.team, "5"]
   ];
   const groups = ROLES.map(role => {
@@ -1923,7 +1955,7 @@ $("stage").addEventListener("click", e => {
     const q = QS.find(x => x.id === k); qi[q.step] = Math.max(0, qList(q.step).indexOf(q)); go(q.step); return;
   }
   const qb = t.closest("[data-q]");
-  if (qb && !qb.disabled) { qi[step] = +qb.dataset.q; go(step); return; }
+  if (qb && !qb.disabled) { qi[step] = +qb.dataset.q; goQ(); return; }
   const lb = t.closest("[data-lb]");
   if (lb) { lbFilter = lb.dataset.lb; refreshLB(); return; }
   const tryc = t.closest("[data-trycode]");
@@ -1956,26 +1988,11 @@ $("stage").addEventListener("input", e => {
   renderHUD();
 });
 
-/* ---------- Save / load / start over ---------- */
-const SAVE_KEY = "orbitalMissionControl.v5";
-$("saveBtn").addEventListener("click", () => {
-  $("saveNote").textContent = store.set(SAVE_KEY, { state, team }) ? "Saved!" : "This browser can't save.";
-});
-$("loadBtn").addEventListener("click", () => {
-  if (flying) return;
-  const v = store.get(SAVE_KEY);
-  if (!v || !validDesign(v.state)) { $("saveNote").textContent = "Nothing saved yet."; return; }
-  state = v.state;
-  if (v.team && v.team.size >= 1 && v.team.size <= 4) team = { size: v.team.size, name: v.team.name || "", names: (v.team.names || []).concat(["", "", "", ""]).slice(0, 4) };
-  $("saveNote").textContent = "Loaded!";
-  if (step === 5) step = 4;
-  render();
-});
+/* ---------- Start over ---------- */
 $("resetBtn").addEventListener("click", () => {
   if (flying) return;
   const keep = state.difficulty;
   state = JSON.parse(JSON.stringify(DEFAULT)); state.difficulty = keep; qi = { 2: 0, 3: 0 };
-  $("saveNote").textContent = "New mission started.";
   go(2);
 });
 
@@ -2021,3 +2038,5 @@ render();
 </script>
 </body>
 </html>
+
+
